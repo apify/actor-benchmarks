@@ -1,0 +1,38 @@
+name: Crawler benchmarks
+
+on:
+  workflow_dispatch:
+
+jobs:
+  crawler_benchmarks:
+    name: Crawler benchmarks
+
+    runs-on: "ubuntu-latest"
+    env:
+      python-version: "3.13"
+      node-version: "22"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node-version }}
+
+      - name: Install dependencies
+        run: npm install -g apify-cli
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.python-version }}
+
+      - name: Set up uv package manager
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ env.python-version }}
+
+      - name: Install Python dependencies
+        run: make install-sync

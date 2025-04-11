@@ -1,0 +1,42 @@
+[project]
+name = "actor_benchmarks"
+version = "0.0.1"
+description = ""
+authors = [
+    {name = "Josef Prochazka",email = "josef.prochazka@apify.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "crawlee[all]",
+    "apify",
+    "apify_client",
+]
+
+
+[dependency-groups]
+dev = [
+    "mypy~=1.15.0",
+    "pre-commit~=4.2.0",
+    "pytest-asyncio~=0.26.0",
+    "pytest-cov~=6.1.0",
+    "pytest-only~=2.1.0",
+    "pytest-xdist~=3.6.0",
+    "pytest~=8.3.0",
+    "ruff~=0.11.0",
+]
+
+[tool.mypy]
+python_version = "3.13"
+plugins = ["pydantic.mypy"]
+files = ["generic_actor_benchmarks"]
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_ignores = true

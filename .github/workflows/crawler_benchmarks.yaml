@@ -38,6 +38,6 @@ jobs:
         run: make install-sync
 
       - name: Run benchmark
-        run: python -m ./actor-benchmarks/crawler_actors_configurations/benchmark.py
+        run: python ./actor-benchmarks/crawler_actors_configurations/benchmark.py
         env:
           APIFY_TEST_USER_API_TOKEN: ${{ secrets.APIFY_TEST_USER_API_TOKEN }}

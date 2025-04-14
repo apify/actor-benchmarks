@@ -9,8 +9,18 @@
       "type": "array",
       "description": "A static list of URLs to scrape.",
       "editor": "requestListSources",
-      "prefill": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }]
+      "prefill": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }],
+      "default": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }]
+    },
+    "exclude": {
+      "sectionCaption": "Basic configuration",
+      "title": "Links to exclude",
+      "type": "string",
+      "description": "Links to exclude.",
+      "editor": "textfield",
+      "prefill": "https://warehouse-theme-metal.myshopify.com/products**",
+      "default": "https://warehouse-theme-metal.myshopify.com/products**"
     }
   },
-  "required": ["startUrls"]
+  "required": ["startUrls", "exclude"]
 }

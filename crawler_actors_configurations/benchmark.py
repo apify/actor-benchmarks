@@ -1,5 +1,6 @@
 import dataclasses
 import json
+import logging
 import os
 import subprocess
 from datetime import timedelta
@@ -12,6 +13,8 @@ from apify_client import ApifyClientAsync
 
 
 TEST_USER_NAME = "apify-test"
+
+logger = logging.getLogger(__name__)
 
 
 @dataclasses.dataclass()
@@ -115,6 +118,13 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             runtime=timedelta(seconds=runtime),
         )
 
+    def __str__(self) -> str:
+        return (
+            f"Actor: {self.meta_data.actor_name}, "
+            f"Valid results: {self.valid_result_count}, "
+            f"Runtime: {self.runtime.total_seconds()}s, "
+        )
+
 
 async def get_valid_run_ids(
     actor_name: str, run_samples: int, run_input: dict, memory_mbytes: int
@@ -123,8 +133,11 @@ async def get_valid_run_ids(
     actor_client = client.actor(actor_name)
 
     valid_run_ids = list[str]()
+    run_count = 0
     while len(valid_run_ids) < run_samples:
         # Run in sequence to not stress the test site
+        run_count += 1
+        logger.info(f"Starting actor: {actor_name}. Run: {run_count}")
         started_run_data = await actor_client.start(
             run_input=run_input, memory_mbytes=memory_mbytes
         )
@@ -138,7 +151,13 @@ async def get_valid_run_ids(
         # if finished_run_data["stats"]["migrationCount"]>0 or finished_run_data['status'] != 'SUCCEEDED':
         if finished_run_data["status"] != "SUCCEEDED":
             # Actor failed or migration occurred during run. Run is not suitable for a benchmark.
+            logger.info("Actor run not suitable for benchmark.")
+            logger.info(
+                f"Actor run status: {finished_run_data['status']}, migration count: {0}"
+            )
             continue
+
+        logger.info("Actor run successfully finished.")
         valid_run_ids.append(finished_run_data["id"])
 
     return valid_run_ids
@@ -147,13 +166,17 @@ async def get_valid_run_ids(
 async def benchmark_runs(
     run_ids: list[str], lock_file: str = ""
 ) -> CrawlerPerformanceBenchmark:
-    benchmarks = [
-        await CrawlerPerformanceBenchmark.from_actor_run(
+    benchmarks = []
+    for run_id in run_ids:
+        benchmark = await CrawlerPerformanceBenchmark.from_actor_run(
             run_id=run_id, actor_lock_file=lock_file
         )
-        for run_id in run_ids
-    ]
-    return CrawlerPerformanceBenchmark.aggregate_results(benchmarks)
+        logger.info(f"Benchmark of run {run_id}. {benchmark=!s}")
+        benchmarks.append(benchmark)
+
+    aggregated_benchmark = CrawlerPerformanceBenchmark.aggregate_results(benchmarks)
+    logger.info(f"{aggregated_benchmark=!r}")
+    return aggregated_benchmark
 
 
 async def main() -> None:
@@ -179,15 +202,13 @@ async def main() -> None:
         with open(actor_dir / "uv.lock", "r") as f:
             lock_file = f.read()
 
-        p = subprocess.run(
+        logger.info(f"Building actor: {actor_name}")
+        subprocess.run(
             ["apify", "push", "--force", "--no-prompt"],
             capture_output=True,
             check=True,
             cwd=actor_dir,
         )
-
-        for line in p.stderr.splitlines():
-            print(line)
 
         client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
 

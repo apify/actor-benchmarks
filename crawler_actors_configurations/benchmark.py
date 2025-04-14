@@ -14,16 +14,16 @@ from apify_client import ApifyClientAsync
 
 TEST_USER_NAME = "apify-test"
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("crawler_benchmark")
 
 
 @dataclasses.dataclass()
 class ActorBenchmarkMetadata:
     actor_name: str = ""
-    actor_inputs: dict = dataclasses.field(default_factory=dict)
-    actor_lock_file: str = ""
-    run_options: dict = dataclasses.field(default_factory=dict)
     benchmark_version: str = ""
+    actor_inputs: dict = dataclasses.field(default_factory=dict)
+    run_options: dict = dataclasses.field(default_factory=dict)
+    actor_lock_file: str = ""
 
     @classmethod
     async def from_actor_run(
@@ -171,16 +171,27 @@ async def benchmark_runs(
         benchmark = await CrawlerPerformanceBenchmark.from_actor_run(
             run_id=run_id, actor_lock_file=lock_file
         )
-        logger.info(f"Benchmark of run {run_id}. {benchmark=!s}")
+        logger.info(f"Benchmark of run {run_id}, {benchmark=!s}")
         benchmarks.append(benchmark)
 
     aggregated_benchmark = CrawlerPerformanceBenchmark.aggregate_results(benchmarks)
-    logger.info(f"{aggregated_benchmark=!r}")
+    logger.info(
+        f"Overall benchmark of all runs, :{aggregated_benchmark=}. \n {aggregated_benchmark.meta_data=}"
+    )
     return aggregated_benchmark
 
 
 async def main() -> None:
     run_samples = 2
+    # Set up logging to be visible in github action
+    logger.setLevel(logging.DEBUG)
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
     # Just for local testing
     os.environ["PATH"] = (
@@ -198,7 +209,7 @@ async def main() -> None:
     for actor_dir in crawler_dirs:
         with open(actor_dir / ".actor" / "actor.json") as f:
             actor_name = f"{TEST_USER_NAME}~{json.load(f)['name']}"
-            print(f"{actor_name=}")
+            logger.info(f"{actor_name=}")
         with open(actor_dir / "uv.lock", "r") as f:
             lock_file = f.read()
 
@@ -224,12 +235,12 @@ async def main() -> None:
                             "url": "https://warehouse-theme-metal.myshopify.com/",
                             "method": "GET",
                         }
-                    ]
+                    ],
+                    "exclude": "https://**/products/**",
                 },
                 memory_mbytes=8192,
             )
-            benchmark = await benchmark_runs(valid_runs, lock_file=lock_file)
-            print(benchmark)
+            await benchmark_runs(valid_runs, lock_file=lock_file)
 
         finally:
             # Delete the actor once it is no longer needed.

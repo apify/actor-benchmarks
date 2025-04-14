@@ -26,7 +26,6 @@ async def main() -> None:
                     "title": title.text if title else None,
                 }
             )
-
             await context.enqueue_links(exclude=[Glob(actor_input.get("exclude", ""))])
 
         await crawler.run(start_urls)

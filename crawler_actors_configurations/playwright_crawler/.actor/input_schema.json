@@ -18,8 +18,8 @@
       "type": "string",
       "description": "Links to exclude.",
       "editor": "textfield",
-      "prefill": "https://warehouse-theme-metal.myshopify.com/products**",
-      "default": "https://warehouse-theme-metal.myshopify.com/products**"
+      "prefill": "https://**/products/**'",
+      "default": "https://**/products/**'"
     }
   },
   "required": ["startUrls", "exclude"]

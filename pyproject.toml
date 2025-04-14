@@ -29,7 +29,7 @@ dev = [
 [tool.mypy]
 python_version = "3.13"
 plugins = ["pydantic.mypy"]
-files = ["generic_actor_benchmarks"]
+files = ["crawler_actors_configurations"]
 check_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_calls = true
@@ -40,3 +40,8 @@ warn_redundant_casts = true
 warn_return_any = true
 warn_unreachable = true
 warn_unused_ignores = true
+
+[tool.basedpyright]
+pythonVersion = "3.13"
+typeCheckingMode = "standard"
+include = ["crawler_actors_configurations"]

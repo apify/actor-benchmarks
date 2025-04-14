@@ -1,0 +1,16 @@
+{
+  "title": "BeautifulSoup Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "sectionCaption": "Basic configuration",
+      "title": "Start URLs",
+      "type": "array",
+      "description": "A static list of URLs to scrape.",
+      "editor": "requestListSources",
+      "prefill": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }]
+    }
+  },
+  "required": ["startUrls"]
+}

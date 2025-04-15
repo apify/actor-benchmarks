@@ -11,6 +11,10 @@ jobs:
     env:
       python-version: "3.13"
       node-version: "22"
+    # Benchmarking should be done one at a time to not overload test page and avoid benchmark influencing each other.
+    concurrency:
+      group: crawler-benchmarks
+      cancel-in-progress: false
 
     steps:
       - name: Checkout repository
@@ -37,7 +41,7 @@ jobs:
       - name: Install Python dependencies
         run: make install-sync
 
-      - name: Run benchmark
-        run: python ./crawler_actors_configurations/benchmark.py
+      - name: Run crawler benchmark
+        run: python ./crawler_actors/benchmark.py
         env:
           APIFY_TEST_USER_API_TOKEN: ${{ secrets.APIFY_TEST_USER_API_TOKEN }}

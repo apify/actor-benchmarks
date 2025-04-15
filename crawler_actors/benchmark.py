@@ -5,92 +5,26 @@ import os
 import subprocess
 from datetime import timedelta
 import pathlib
-from functools import reduce
-from operator import add
-from typing import Self
+from typing import Self, override
 
 from apify_client import ApifyClientAsync
 
+from actor_benchmarks.actor_benchmark import ActorBenchmark, ActorBenchmarkMetadata
 
 TEST_USER_NAME = "apify-test"
 
 logger = logging.getLogger("crawler_benchmark")
 
 
-@dataclasses.dataclass()
-class ActorBenchmarkMetadata:
-    actor_name: str = ""
-    benchmark_version: str = ""
-    actor_inputs: dict = dataclasses.field(default_factory=dict)
-    run_options: dict = dataclasses.field(default_factory=dict)
-    actor_lock_file: str = ""
-
-    @classmethod
-    async def from_actor_run(
-        cls, run_id: str, actor_lock_file: str = "", benchmark_version: str = ""
-    ) -> Self:
-        client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
-        run_client = client.run(run_id=run_id)
-        run = await run_client.get()
-        if run is None:
-            raise ValueError("Run not found.")
-
-        if actor := await client.actor(run["actId"]).get():
-            actor_name = actor["name"]
-        else:
-            actor_name = run["actId"]
-
-        actor_input = await (run_client.key_value_store()).get_record("INPUT")
-        if actor_input is None:
-            raise ValueError("INPUT not found.")
-
-        actor_input_value = actor_input.get("value", {})
-
-        return cls(
-            actor_name=actor_name,
-            actor_inputs=actor_input_value,
-            run_options=run["options"],
-            actor_lock_file=actor_lock_file,
-            benchmark_version=benchmark_version,
-        )
-
-
-@dataclasses.dataclass(kw_only=True)
-class ActorBenchmark:
-    meta_data: ActorBenchmarkMetadata
-
-    @classmethod
-    def aggregate_results(cls, actor_benchmarks: list[Self]) -> Self:
-        if not actor_benchmarks:
-            raise ValueError("No actor benchmarks passed.")
-
-        for benchmark in actor_benchmarks[1:]:
-            if benchmark.meta_data != actor_benchmarks[0].meta_data:
-                raise ValueError("Incompatible benchmarks.")
-
-        # Aggregate results
-        benchmark_field_names = {field.name for field in dataclasses.fields(cls)} - {
-            "meta_data"
-        }
-        benchmark_fields = {}
-        for benchmark_field_name in benchmark_field_names:
-            benchmark_fields[benchmark_field_name] = reduce(
-                add,
-                (
-                    getattr(benchmark, benchmark_field_name)
-                    for benchmark in actor_benchmarks
-                ),
-            ) / len(actor_benchmarks)
-
-        return cls(meta_data=actor_benchmarks[0].meta_data, **benchmark_fields)
-
-
 @dataclasses.dataclass(kw_only=True)
 class CrawlerPerformanceBenchmark(ActorBenchmark):
+    """Simple performance benchmark for measuring duration of run and number of valid results."""
+
     valid_result_count: int = 0
     runtime: timedelta = timedelta(seconds=0)
 
     @classmethod
+    @override
     async def from_actor_run(
         cls, run_id: str, actor_lock_file: str = "", benchmark_version: str = "1"
     ) -> Self:
@@ -126,9 +60,10 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
         )
 
 
-async def get_valid_run_ids(
+async def _get_valid_run_ids(
     actor_name: str, run_samples: int, run_input: dict, memory_mbytes: int
 ) -> list[str]:
+    """Get run ids of actor runs by running the actor several times and keeping only the valid runs."""
     client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
     actor_client = client.actor(actor_name)
 
@@ -163,9 +98,10 @@ async def get_valid_run_ids(
     return valid_run_ids
 
 
-async def benchmark_runs(
+async def _benchmark_runs(
     run_ids: list[str], lock_file: str = ""
 ) -> CrawlerPerformanceBenchmark:
+    """Benchmark existing actor runs."""
     benchmarks = []
     for run_id in run_ids:
         benchmark = await CrawlerPerformanceBenchmark.from_actor_run(
@@ -176,14 +112,15 @@ async def benchmark_runs(
 
     aggregated_benchmark = CrawlerPerformanceBenchmark.aggregate_results(benchmarks)
     logger.info(
-        f"Overall benchmark of all runs, :{aggregated_benchmark=}. \n {aggregated_benchmark.meta_data=}"
+        f"Overall benchmark of all runs, :{aggregated_benchmark=!s}. \n {aggregated_benchmark.meta_data=}"
     )
     return aggregated_benchmark
 
 
 async def main() -> None:
     run_samples = 2
-    # Set up logging to be visible in github action
+
+    # Set up logging to be visible in GitHub action
     logger.setLevel(logging.DEBUG)
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.DEBUG)
@@ -193,19 +130,14 @@ async def main() -> None:
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
 
-    # Just for local testing
-    os.environ["PATH"] = (
-        f"/home/pijukatel/.nvm/versions/node/v22.11.0/bin/:{os.environ['PATH']}"
-    )
-
-    subprocess.run(  # noqa: ASYNC221, S603
-        ["apify", "login", "-t", os.environ["APIFY_TEST_USER_API_TOKEN"]],  # noqa: S607
+    subprocess.run(
+        ["apify", "login", "-t", os.environ["APIFY_TEST_USER_API_TOKEN"]],
         capture_output=True,
         check=True,
     )
 
-    current_dir = pathlib.Path(__file__).parent
-    crawler_dirs = [d for d in current_dir.iterdir() if d.is_dir()]
+    # Run and benchmark all crawler actors found in directory containing this file.
+    crawler_dirs = [d for d in pathlib.Path(__file__).parent.iterdir() if d.is_dir()]
     for actor_dir in crawler_dirs:
         with open(actor_dir / ".actor" / "actor.json") as f:
             actor_name = f"{TEST_USER_NAME}~{json.load(f)['name']}"
@@ -223,10 +155,9 @@ async def main() -> None:
 
         client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
 
-        # Run actors n times
-        # Run in sequence to not stress the test site
+        # Run actors n times. Run in sequence to not stress the test site.
         try:
-            valid_runs = await get_valid_run_ids(
+            valid_runs = await _get_valid_run_ids(
                 actor_name=actor_name,
                 run_samples=run_samples,
                 run_input={
@@ -240,7 +171,9 @@ async def main() -> None:
                 },
                 memory_mbytes=8192,
             )
-            await benchmark_runs(valid_runs, lock_file=lock_file)
+
+            benchmark = await _benchmark_runs(valid_runs, lock_file=lock_file)
+            await benchmark.save_to_vs()
 
         finally:
             # Delete the actor once it is no longer needed.

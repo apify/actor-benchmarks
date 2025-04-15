@@ -18,13 +18,10 @@ lint:
 type-check:
 	uv run mypy
 
-unit-tests:
-	uv run pytest --numprocesses=auto --verbose tests/unit
-
 format:
 	uv run ruff check --fix
 	uv run ruff format
 
 # The check-code target runs a series of checks equivalent to those performed by pre-commit hooks
 # and the run_checks.yaml GitHub Actions workflow.
-check-code: lint type-check unit-tests
+check-code: lint type-check

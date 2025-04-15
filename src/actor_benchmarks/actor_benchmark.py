@@ -105,8 +105,12 @@ class ActorBenchmark:
     async def save_to_vs(self) -> None:
         """Save benchmark to kvs named as the class name. Key of the record is the current date and time."""
         client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
-        kvs_client = client.key_value_store(self.__class__.__name__)
-        await kvs_client.set_record(
+        # Ensure kvs exists
+        kvs = await client.key_value_stores().get_or_create(
+            name=self.__class__.__name__
+        )
+        # Store benchmark in kvs
+        await client.key_value_store(kvs.get("id", "")).set_record(
             key=datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H-%M-%S"),
             value=asdict(self),
             content_type="application/json",

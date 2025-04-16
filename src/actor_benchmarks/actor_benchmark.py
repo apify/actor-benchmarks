@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import field, dataclass, fields, asdict
 from datetime import datetime, timezone
@@ -6,6 +7,19 @@ from operator import add
 from typing import Self
 
 from apify_client import ApifyClientAsync
+
+logger = logging.getLogger("benchmark_logger")
+
+
+def set_logging_config() -> None:
+    """Set logging configuration for the benchmark."""
+    logger.setLevel(logging.INFO)
+    console_handler = logging.StreamHandler()
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
 
 
 @dataclass()
@@ -109,8 +123,10 @@ class ActorBenchmark:
         kvs = await client.key_value_stores().get_or_create(
             name=self.__class__.__name__
         )
+        kvs_id = kvs.get("id", "")
         # Store benchmark in kvs
-        await client.key_value_store(kvs.get("id", "")).set_record(
+        logger.info(f"Saving benchmark to key value store: {kvs_id=}")
+        await client.key_value_store(kvs_id).set_record(
             key=datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H-%M-%S"),
             value=asdict(self),
             content_type="application/json",

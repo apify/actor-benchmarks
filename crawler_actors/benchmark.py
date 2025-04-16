@@ -1,6 +1,5 @@
 import dataclasses
 import json
-import logging
 import os
 import subprocess
 from datetime import timedelta
@@ -9,11 +8,15 @@ from typing import Self, override
 
 from apify_client import ApifyClientAsync
 
-from actor_benchmarks.actor_benchmark import ActorBenchmark, ActorBenchmarkMetadata
+from actor_benchmarks.actor_benchmark import (
+    ActorBenchmark,
+    ActorBenchmarkMetadata,
+    logger,
+    set_logging_config,
+)
 
+# To be changed once the dedicated benchmark test user is deployed.
 TEST_USER_NAME = "apify-test"
-
-logger = logging.getLogger("crawler_benchmark")
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -118,17 +121,9 @@ async def _benchmark_runs(
 
 
 async def main() -> None:
-    run_samples = 2
+    set_logging_config()
 
-    # Set up logging to be visible in GitHub action
-    logger.setLevel(logging.DEBUG)
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    run_samples = 10
 
     subprocess.run(
         ["apify", "login", "-t", os.environ["APIFY_TEST_USER_API_TOKEN"]],

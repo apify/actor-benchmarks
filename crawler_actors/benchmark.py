@@ -13,10 +13,8 @@ from actor_benchmarks.actor_benchmark import (
     ActorBenchmarkMetadata,
     logger,
     set_logging_config,
+    APIFY_TOKEN_ENV_VARIABLE_NAME,
 )
-
-# To be changed once the dedicated benchmark test user is deployed.
-TEST_USER_NAME = "apify-test"
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -36,9 +34,9 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             actor_lock_file=actor_lock_file,
             benchmark_version=benchmark_version,
         )
-        run_client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN")).run(
-            run_id=run_id
-        )
+        run_client = ApifyClientAsync(
+            token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME)
+        ).run(run_id=run_id)
         run_data = await run_client.get()
         if run_data is None:
             raise ValueError("Missing run data.")
@@ -67,7 +65,7 @@ async def _get_valid_run_ids(
     actor_name: str, run_samples: int, run_input: dict, memory_mbytes: int
 ) -> list[str]:
     """Get run ids of actor runs by running the actor several times and keeping only the valid runs."""
-    client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
+    client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
     actor_client = client.actor(actor_name)
 
     valid_run_ids = list[str]()
@@ -125,17 +123,28 @@ async def main() -> None:
 
     run_samples = 10
 
+    client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
+
     subprocess.run(
-        ["apify", "login", "-t", os.environ["APIFY_TEST_USER_API_TOKEN"]],
+        ["apify", "login", "-t", os.environ[APIFY_TOKEN_ENV_VARIABLE_NAME]],
         capture_output=True,
         check=True,
     )
+
+    client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
+
+    user = await client.user().get()
+
+    if user is not None:
+        user_name = user["username"]
+    else:
+        raise RuntimeError("Missing user data")
 
     # Run and benchmark all crawler actors found in directory containing this file.
     crawler_dirs = [d for d in pathlib.Path(__file__).parent.iterdir() if d.is_dir()]
     for actor_dir in crawler_dirs:
         with open(actor_dir / ".actor" / "actor.json") as f:
-            actor_name = f"{TEST_USER_NAME}~{json.load(f)['name']}"
+            actor_name = f"{user_name}~{json.load(f)['name']}"
             logger.info(f"{actor_name=}")
         with open(actor_dir / "uv.lock", "r") as f:
             lock_file = f.read()
@@ -147,8 +156,6 @@ async def main() -> None:
             check=True,
             cwd=actor_dir,
         )
-
-        client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
 
         # Run actors n times. Run in sequence to not stress the test site.
         try:

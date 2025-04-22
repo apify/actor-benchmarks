@@ -44,4 +44,4 @@ jobs:
       - name: Run crawler benchmark
         run: python ./crawler_actors/benchmark.py
         env:
-          APIFY_TEST_USER_API_TOKEN: ${{ secrets.APIFY_TEST_USER_API_TOKEN }}
+          APIFY_API_TOKEN: ${{ secrets.TEST_USER_APIFY_TEST_CRAWLEE_API_TOKEN }}

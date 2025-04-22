@@ -10,6 +10,8 @@ from apify_client import ApifyClientAsync
 
 logger = logging.getLogger("benchmark_logger")
 
+APIFY_TOKEN_ENV_VARIABLE_NAME = "APIFY_API_TOKEN"
+
 
 def set_logging_config() -> None:
     """Set logging configuration for the benchmark."""
@@ -34,7 +36,7 @@ class ActorBenchmarkMetadata:
     async def from_actor_run(
         cls, run_id: str, actor_lock_file: str = "", benchmark_version: str = ""
     ) -> Self:
-        client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
+        client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
         run_client = client.run(run_id=run_id)
         run = await run_client.get()
         if run is None:
@@ -72,7 +74,7 @@ class ActorBenchmark:
 
         Args:
             run_id: actor run id used to generate benchmark.
-            actor_lock_file: addtional detailed information about actor version dependencies
+            actor_lock_file: additional detailed information about actor version dependencies
             benchmark_version: version of the benchmark
 
         Returns:
@@ -118,7 +120,7 @@ class ActorBenchmark:
 
     async def save_to_vs(self) -> None:
         """Save benchmark to kvs named as the class name. Key of the record is the current date and time."""
-        client = ApifyClientAsync(token=os.getenv("APIFY_TEST_USER_API_TOKEN"))
+        client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
         # Ensure kvs exists
         kvs = await client.key_value_stores().get_or_create(
             name=self.__class__.__name__

@@ -123,8 +123,6 @@ async def main() -> None:
 
     run_samples = 10
 
-    client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
-
     subprocess.run(
         ["apify", "login", "-t", os.environ[APIFY_TOKEN_ENV_VARIABLE_NAME]],
         capture_output=True,

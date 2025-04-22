@@ -17,10 +17,12 @@ on:
 jobs:
   lint_check:
     name: Lint check
-    uses: apify/workflows/.github/workflows/python_lint_check.yaml@parametrize-python-workflows-by-python-version
+    uses: apify/workflows/.github/workflows/python_lint_check.yaml@main
+    with:
+      python-version: '["3.13"]'
 
   type_check:
     name: Type check
-    uses: apify/workflows/.github/workflows/python_type_check.yaml@parametrize-python-workflows-by-python-version
+    uses: apify/workflows/.github/workflows/python_type_check.yaml@main
     with:
       python-version: '["3.13"]'

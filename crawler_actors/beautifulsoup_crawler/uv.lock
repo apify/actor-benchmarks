@@ -88,7 +88,7 @@ dependencies = [
 requires-dist = [
     { name = "apify" },
     { name = "apify-client", git = "https://github.com/apify/apify-client-python.git?rev=timeout-rework" },
-    { name = "crawlee", extras = ["beautifulsoup"] },
+    { name = "crawlee", extras = ["beautifulsoup"], git = "https://github.com/Mantisus/crawlee-python.git?rev=impit-client" },
 ]
 
 [[package]]
@@ -419,8 +419,8 @@ wheels = [
 
 [[package]]
 name = "crawlee"
-version = "0.6.6"
-source = { registry = "https://pypi.org/simple" }
+version = "0.6.7"
+source = { git = "https://github.com/Mantisus/crawlee-python.git?rev=impit-client#75f34d3cc4069797caa7caef4c7d9181024630f3" }
 dependencies = [
     { name = "apify-fingerprint-datapoints" },
     { name = "browserforge" },
@@ -438,10 +438,6 @@ dependencies = [
     { name = "tldextract" },
     { name = "typing-extensions" },
     { name = "yarl" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/94/73/425b1b17e24360be59cf39cdcefeba702c9eaed6d96479feb15e9e2d426d/crawlee-0.6.6.tar.gz", hash = "sha256:011750c112541b666972a9167c74cc4b0f590d5912a125b0bae55ebea73c4d63", size = 23937129 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d1/0f/223c315b2daeb47e89a46d24d70be9c2da4e42a842d4b3d91f80ab9a9718/crawlee-0.6.6-py3-none-any.whl", hash = "sha256:f8bb216603ce8df0f8e23cf93e8ad3538b7d41c2d5b6a45cd0de5ac3e8666e70", size = 248766 },
 ]
 
 [package.optional-dependencies]

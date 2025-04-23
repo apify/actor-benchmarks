@@ -1,7 +1,7 @@
 from apify import Actor
 from crawlee import Glob
 from crawlee.crawlers import BeautifulSoupCrawler, BeautifulSoupCrawlingContext
-from crawlee.http_clients import HttpxHttpClient
+from crawlee.http_clients import ImpitHttpClient
 
 
 async def main() -> None:
@@ -9,7 +9,7 @@ async def main() -> None:
     async with Actor:
         actor_input = await Actor.get_input() or {}
 
-        crawler = BeautifulSoupCrawler(http_client=HttpxHttpClient())
+        crawler = BeautifulSoupCrawler(http_client=ImpitHttpClient())
 
         start_urls = [
             start_url["url"] for start_url in actor_input.get("startUrls", [])

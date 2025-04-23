@@ -8,7 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = [
-    "crawlee[beautifulsoup]",
+    "crawlee[beautifulsoup] @ git+https://github.com/Mantisus/crawlee-python.git@impit-client",
     "apify",
     "apify-client @ git+https://github.com/apify/apify-client-python.git@timeout-rework"
 ]

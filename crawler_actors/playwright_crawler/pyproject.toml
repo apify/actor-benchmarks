@@ -10,6 +10,6 @@ requires-python = ">=3.9,<4.0"
 dependencies = [
     "crawlee[playwright]",
     "apify",
-    "apify-client @ git+https://github.com/apify/apify-client-python.git@timeout-rework"
+    "apify-client @ git+https://github.com/apify/apify-client-python.git@remove-redundant-retries-from-batch-add-requests"
 ]
 

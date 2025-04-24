@@ -48,8 +48,8 @@ wheels = [
 
 [[package]]
 name = "apify-client"
-version = "1.10.0"
-source = { git = "https://github.com/apify/apify-client-python.git?rev=timeout-rework#b1d81db3a358f3c4abf04e365256f2e9d2561934" }
+version = "1.9.3"
+source = { git = "https://github.com/apify/apify-client-python.git?rev=remove-redundant-retries-from-batch-add-requests#e411ca4811bca99224eb863e04ec715081356ed2" }
 dependencies = [
     { name = "apify-shared" },
     { name = "httpx" },
@@ -827,7 +827,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "apify" },
-    { name = "apify-client", git = "https://github.com/apify/apify-client-python.git?rev=timeout-rework" },
+    { name = "apify-client", git = "https://github.com/apify/apify-client-python.git?rev=remove-redundant-retries-from-batch-add-requests" },
     { name = "crawlee", extras = ["playwright"] },
 ]
 

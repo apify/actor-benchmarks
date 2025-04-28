@@ -2,6 +2,12 @@ name: Crawler benchmarks
 
 on:
   workflow_dispatch:
+    inputs:
+      crawler_name_pattern:
+        description: Run only crawlers that are in folders whose name matches this patter
+        required: true
+        type: string
+        default: ".*py"
 
 jobs:
   crawler_benchmarks:
@@ -42,6 +48,6 @@ jobs:
         run: make install-sync
 
       - name: Run crawler benchmark
-        run: python ./crawler_actors/benchmark.py
+        run: python ./crawler_actors/benchmark.py "${{ inputs.crawler_name_pattern }}"
         env:
           APIFY_API_TOKEN: ${{ secrets.TEST_USER_APIFY_TEST_CRAWLEE_API_TOKEN }}

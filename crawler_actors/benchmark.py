@@ -1,6 +1,9 @@
 import dataclasses
 import json
 import os
+import re
+import typer
+import asyncio
 import subprocess
 from datetime import timedelta
 import pathlib
@@ -62,7 +65,10 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
 
 
 async def _get_valid_run_ids(
-    actor_name: str, run_samples: int, run_input: dict, memory_mbytes: int
+    actor_name: str,
+    run_samples: int,
+    memory_mbytes: int,
+    run_input: dict | None = None,
 ) -> list[str]:
     """Get run ids of actor runs by running the actor several times and keeping only the valid runs."""
     client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
@@ -118,7 +124,7 @@ async def _benchmark_runs(
     return aggregated_benchmark
 
 
-async def main() -> None:
+async def benchmark_actors(actor_name_pattern: str) -> None:
     set_logging_config()
 
     run_samples = 10
@@ -138,14 +144,14 @@ async def main() -> None:
     else:
         raise RuntimeError("Missing user data")
 
-    # Run and benchmark all crawler actors found in directory containing this file.
+    # Run and benchmark all crawler actors found in the directory containing this file.
     crawler_dirs = [d for d in pathlib.Path(__file__).parent.iterdir() if d.is_dir()]
     for actor_dir in crawler_dirs:
+        if not re.findall(actor_name_pattern, str(actor_dir)):
+            continue
         with open(actor_dir / ".actor" / "actor.json") as f:
             actor_name = f"{user_name}~{json.load(f)['name']}"
             logger.info(f"{actor_name=}")
-        with open(actor_dir / "uv.lock", "r") as f:
-            lock_file = f.read()
 
         logger.info(f"Building actor: {actor_name}")
         subprocess.run(
@@ -160,27 +166,35 @@ async def main() -> None:
             valid_runs = await _get_valid_run_ids(
                 actor_name=actor_name,
                 run_samples=run_samples,
-                run_input={
-                    "startUrls": [
-                        {
-                            "url": "https://warehouse-theme-metal.myshopify.com/",
-                            "method": "GET",
-                        }
-                    ],
-                    "exclude": "https://**/products/**",
-                },
                 memory_mbytes=8192,
             )
 
-            benchmark = await _benchmark_runs(valid_runs, lock_file=lock_file)
+            benchmark = await _benchmark_runs(
+                valid_runs, lock_file=_read_version_file(actor_dir)
+            )
             await benchmark.save_to_vs()
 
         finally:
-            # Delete the actor once it is no longer needed.
+            # Delete the actor once it is no longer necessary.
             await client.actor(actor_name).delete()
 
 
-if __name__ == "__main__":
-    import asyncio
+def _read_version_file(directory: pathlib.Path) -> str:
+    version_files = ["uv.lock", "poetry.lock", "package.json"]
+    for version_file in version_files:
+        if (path := directory / version_file).exists():
+            with open(path) as f:
+                return f.read()
+    return ""
 
-    asyncio.run(main())
+
+benchmark_cli = typer.Typer()
+
+
+@benchmark_cli.command()
+def run(actor_name_pattern: str = typer.Argument(default=r".*py")) -> None:
+    asyncio.run(benchmark_actors(actor_name_pattern))
+
+
+if __name__ == "__main__":
+    benchmark_cli()

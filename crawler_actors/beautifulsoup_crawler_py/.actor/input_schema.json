@@ -1,5 +1,5 @@
 {
-  "title": "Playwright Scraper",
+  "title": "BeautifulSoup Scraper",
   "type": "object",
   "schemaVersion": 1,
   "properties": {
@@ -13,13 +13,12 @@
       "default": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }]
     },
     "exclude": {
-      "sectionCaption": "Basic configuration",
       "title": "Links to exclude",
-      "type": "string",
+      "type": "array",
       "description": "Links to exclude.",
-      "editor": "textfield",
-      "prefill": "https://**/products/**'",
-      "default": "https://**/products/**'"
+      "editor": "stringList",
+      "prefill": ["https://**/products/**"],
+      "default": ["https://**/products/**"]
     }
   },
   "required": ["startUrls", "exclude"]

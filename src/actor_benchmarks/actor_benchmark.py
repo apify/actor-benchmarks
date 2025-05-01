@@ -127,7 +127,9 @@ class ActorBenchmark:
         )
         kvs_id = kvs.get("id", "")
         # Store benchmark in kvs
-        record_key = datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H-%M-%S")
+        record_key = self.meta_data.actor_name + datetime.now(tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H-%M-%S"
+        )
         logger.info(
             f"Saving benchmark to key value store: {kvs_id=} under key: {record_key}.\n"
             f"Link: https://api.apify.com/v2/key-value-stores/{kvs_id}/records/{record_key}"

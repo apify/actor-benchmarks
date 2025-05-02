@@ -1,10 +1,9 @@
 from re import Pattern
 from typing import Any
 
-from apify import Actor
+from apify import Actor, ProxyConfiguration
 from crawlee import Glob
 from crawlee.crawlers import BeautifulSoupCrawler, BeautifulSoupCrawlingContext
-from crawlee.http_clients import HttpxHttpClient
 
 
 async def main() -> None:
@@ -12,7 +11,11 @@ async def main() -> None:
     async with Actor:
         actor_input = await Actor.get_input() or {}
 
-        crawler = BeautifulSoupCrawler(http_client=HttpxHttpClient())
+        crawler = BeautifulSoupCrawler(
+            proxy_configuration=(
+                await Actor.create_proxy_configuration() or ProxyConfiguration()
+            )
+        )
 
         start_urls = [
             start_url["url"] for start_url in actor_input.get("startUrls", [])

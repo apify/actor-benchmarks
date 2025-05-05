@@ -1,5 +1,5 @@
 // Apify SDK - toolkit for building Apify Actors (Read more at https://docs.apify.com/sdk/js/)
-import { Actor } from 'apify';
+import {Actor as Apify, Actor } from 'apify';
 // Crawlee - web scraping and browser automation library (Read more at https://crawlee.dev)
 import { CheerioCrawler, Dataset } from 'crawlee';
 // this is ESM project, and as such, it requires you to specify extensions in your relative imports
@@ -13,9 +13,10 @@ await Actor.init();
 const {
     startUrls = ['https://apify.com'],
     exclude = [],
+    proxyConfigurationInput = null,
 } = await Actor.getInput() ?? {};
 
-const proxyConfiguration = await Actor.createProxyConfiguration();
+const proxyConfiguration = proxyConfigurationInput ? await Actor.createProxyConfiguration(proxyConfigurationInput) : await Actor.createProxyConfiguration();
 
 const crawler = new CheerioCrawler({
     proxyConfiguration,

@@ -180,7 +180,7 @@ async def benchmark_actors(actor_name_pattern: str) -> None:
 
 
 def _read_version_file(directory: pathlib.Path) -> str:
-    version_files = ["uv.lock", "poetry.lock", "package.json"]
+    version_files = ["uv.lock", "poetry.lock", "package-json.lock"]
     for version_file in version_files:
         if (path := directory / version_file).exists():
             with open(path) as f:

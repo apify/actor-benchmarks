@@ -2,7 +2,7 @@ from re import Pattern
 from typing import Any
 
 from apify import Actor, ProxyConfiguration
-from crawlee import Glob
+from crawlee import Glob, ConcurrencySettings
 from crawlee.crawlers import BeautifulSoupCrawler, BeautifulSoupCrawlingContext
 
 
@@ -12,9 +12,11 @@ async def main() -> None:
         actor_input = await Actor.get_input() or {}
 
         crawler = BeautifulSoupCrawler(
-            proxy_configuration=(
-                await Actor.create_proxy_configuration() or ProxyConfiguration()
+            proxy_configuration=await Actor.create_proxy_configuration(
+                actor_proxy_input=actor_input.get("proxyConfiguration")
             )
+            or ProxyConfiguration(),
+            concurrency_settings=ConcurrencySettings(desired_concurrency=10),
         )
 
         start_urls = [

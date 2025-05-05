@@ -17,9 +17,10 @@ await Actor.init();
 const {
     startUrls = ['https://apify.com'],
     exclude = [],
+    proxyConfigurationInput = null,
 } = await Actor.getInput() ?? {};
 
-const proxyConfiguration = await Actor.createProxyConfiguration();
+const proxyConfiguration = proxyConfigurationInput ? await Actor.createProxyConfiguration(proxyConfigurationInput) : await Actor.createProxyConfiguration();
 
 export const router = createPlaywrightRouter();
 

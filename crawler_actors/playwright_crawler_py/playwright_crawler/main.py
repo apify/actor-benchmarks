@@ -13,9 +13,10 @@ async def main() -> None:
 
         crawler = PlaywrightCrawler(
             headless=True,
-            proxy_configuration=(
-                await Actor.create_proxy_configuration() or ProxyConfiguration()
-            ),
+            proxy_configuration=await Actor.create_proxy_configuration(
+                actor_proxy_input=actor_input.get("proxyConfiguration")
+            )
+            or ProxyConfiguration(),
         )
 
         start_urls = [

@@ -19,6 +19,23 @@
       "editor": "stringList",
       "prefill": ["https://**/products/**"],
       "default": ["https://**/products/**"]
+    },
+    "proxyConfiguration": {
+      "sectionCaption": "Proxy and HTTP configuration",
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "Specifies proxy servers that will be used by the scraper in order to hide its origin.",
+      "editor": "proxy",
+      "prefill": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": [ "USA" ],
+        "apifyProxyCountry": "US"
+      },
+      "default": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": [ "USA" ],
+        "apifyProxyCountry": "US"
+      }
     }
   },
   "required": ["startUrls", "exclude"]

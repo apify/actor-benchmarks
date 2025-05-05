@@ -2,6 +2,7 @@
 import { Actor } from 'apify';
 // Crawlee - web scraping and browser automation library (Read more at https://crawlee.dev)
 import { CheerioCrawler, Dataset } from 'crawlee';
+import { ImpitHttpClient } from '@crawlee/impit-client';
 // this is ESM project, and as such, it requires you to specify extensions in your relative imports
 // read more about this here: https://nodejs.org/docs/latest-v18.x/api/esm.html#mandatory-file-extensions
 // import { router } from './routes.js';
@@ -31,6 +32,7 @@ const crawler = new CheerioCrawler({
         await Dataset.pushData({ url: request.loadedUrl, title });
     },
     additionalMimeTypes: ['image/webp', 'image/jpeg'],
+    httpClient: new ImpitHttpClient(),
 });
 
 await crawler.run(startUrls);

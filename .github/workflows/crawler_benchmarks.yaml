@@ -8,6 +8,11 @@ on:
         required: true
         type: string
         default: ".*py"
+      crawler_input:
+        description: Crawler input JSON
+        required: false
+        type: string
+        default: ""
 
 jobs:
   crawler_benchmarks:
@@ -48,6 +53,6 @@ jobs:
         run: make install-sync
 
       - name: Run crawler benchmark
-        run: python ./crawler_actors/benchmark.py "${{ inputs.crawler_name_pattern }}"
+        run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}'
         env:
           APIFY_API_TOKEN: ${{ secrets.TEST_USER_APIFY_TEST_CRAWLEE_API_TOKEN }}

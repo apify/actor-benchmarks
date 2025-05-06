@@ -129,7 +129,9 @@ async def _benchmark_runs(
     return aggregated_benchmark
 
 
-async def benchmark_actors(actor_name_pattern: str) -> None:
+async def benchmark_actors(
+    actor_name_pattern: str, actor_input_json: str | None = None
+) -> None:
     set_logging_config()
 
     run_samples = 10
@@ -172,6 +174,7 @@ async def benchmark_actors(actor_name_pattern: str) -> None:
                 actor_name=actor_name,
                 run_samples=run_samples,
                 memory_mbytes=8192,
+                run_input=json.loads(actor_input_json) if actor_input_json else None,
             )
 
             benchmark = await _benchmark_runs(
@@ -185,7 +188,7 @@ async def benchmark_actors(actor_name_pattern: str) -> None:
 
 
 def _read_version_file(directory: pathlib.Path) -> str:
-    version_files = ["uv.lock", "poetry.lock", "package-json.lock"]
+    version_files = ["uv.lock", "poetry.lock", "package-lock.json"]
     for version_file in version_files:
         if (path := directory / version_file).exists():
             with open(path) as f:
@@ -197,8 +200,15 @@ benchmark_cli = typer.Typer()
 
 
 @benchmark_cli.command()
-def run(actor_name_pattern: str = typer.Argument(default=r".*py")) -> None:
-    asyncio.run(benchmark_actors(actor_name_pattern))
+def run(
+    actor_name_pattern: str = typer.Argument(default=r".*py"),
+    actor_input_json: str | None = typer.Argument(default=None),
+) -> None:
+    asyncio.run(
+        benchmark_actors(
+            actor_name_pattern=actor_name_pattern, actor_input_json=actor_input_json
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -30,12 +30,17 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
     @classmethod
     @override
     async def from_actor_run(
-        cls, run_id: str, actor_lock_file: str = "", benchmark_version: str = "1"
+        cls,
+        run_id: str,
+        actor_lock_file: str = "",
+        benchmark_version: str = "1",
+        custom_fields: dict[str, str] | None = None,
     ) -> Self:
         meta_data = await ActorBenchmarkMetadata.from_actor_run(
             run_id=run_id,
             actor_lock_file=actor_lock_file,
             benchmark_version=benchmark_version,
+            custom_fields=custom_fields,
         )
         run_client = ApifyClientAsync(
             token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME)
@@ -172,7 +177,7 @@ async def benchmark_actors(actor_name_pattern: str) -> None:
             benchmark = await _benchmark_runs(
                 valid_runs, lock_file=_read_version_file(actor_dir)
             )
-            await benchmark.save_to_vs()
+            await benchmark.save_to_kvs()
 
         finally:
             # Delete the actor once it is no longer necessary.

@@ -31,10 +31,17 @@ class ActorBenchmarkMetadata:
     actor_inputs: dict = field(default_factory=dict)
     run_options: dict = field(default_factory=dict)
     actor_lock_file: str = field(default="", repr=False)
+    custom_fields: dict[str, str] = field(
+        default_factory=dict, repr=False, compare=False
+    )
 
     @classmethod
     async def from_actor_run(
-        cls, run_id: str, actor_lock_file: str = "", benchmark_version: str = ""
+        cls,
+        run_id: str,
+        actor_lock_file: str = "",
+        benchmark_version: str = "",
+        custom_fields: dict[str, str] | None = None,
     ) -> Self:
         client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
         run_client = client.run(run_id=run_id)
@@ -59,6 +66,7 @@ class ActorBenchmarkMetadata:
             run_options=run["options"],
             actor_lock_file=actor_lock_file,
             benchmark_version=benchmark_version,
+            custom_fields=custom_fields or {},
         )
 
 
@@ -68,14 +76,21 @@ class ActorBenchmark:
 
     @classmethod
     async def from_actor_run(
-        cls, run_id: str, actor_lock_file: str = "", benchmark_version: str = "1"
+        cls,
+        run_id: str,
+        *,
+        actor_lock_file: str = "",
+        benchmark_version: str = "1",
+        custom_fields: dict[str, str] | None = None,
     ) -> Self:
         """Generate benchmark from existing actor run.
 
         Args:
-            run_id: actor run id used to generate benchmark.
-            actor_lock_file: additional detailed information about actor version dependencies
-            benchmark_version: version of the benchmark
+            run_id: Actor run id used to generate benchmark.
+            actor_lock_file: Additional detailed information about actor version dependencies.
+            benchmark_version: Version of the benchmark.
+            custom_fields: Custom data that can be appended to the benchmark, for example,
+             specific logs or specific crawler configurations.
 
         Returns:
             Benchmark created from actor run.
@@ -84,6 +99,7 @@ class ActorBenchmark:
             run_id=run_id,
             actor_lock_file=actor_lock_file,
             benchmark_version=benchmark_version,
+            custom_fields=custom_fields,
         )
         return cls(meta_data=meta_data)
 
@@ -118,7 +134,7 @@ class ActorBenchmark:
 
         return cls(meta_data=actor_benchmarks[0].meta_data, **benchmark_fields)
 
-    async def save_to_vs(self) -> None:
+    async def save_to_kvs(self) -> None:
         """Save benchmark to kvs named as the class name. Key of the record is the current date and time."""
         client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
         # Ensure kvs exists

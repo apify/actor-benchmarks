@@ -28,12 +28,12 @@
       "editor": "proxy",
       "prefill": {
         "useApifyProxy": true,
-        "apifyProxyGroups": [ "USA" ],
+        "apifyProxyGroups": [ "SHADER" ],
         "apifyProxyCountry": "US"
       },
       "default": {
         "useApifyProxy": true,
-        "apifyProxyGroups": [ "USA" ],
+        "apifyProxyGroups": [ "SHADER" ],
         "apifyProxyCountry": "US"
       }
     }

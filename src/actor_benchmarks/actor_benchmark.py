@@ -11,6 +11,7 @@ from apify_client import ApifyClientAsync
 logger = logging.getLogger("benchmark_logger")
 
 APIFY_TOKEN_ENV_VARIABLE_NAME = "APIFY_API_TOKEN"
+_STORAGE_NAME_LIMIT = 63
 
 
 def set_logging_config() -> None:
@@ -157,7 +158,7 @@ class ActorBenchmark:
         # Ensure kvs exists
         client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
         kvs = await client.key_value_stores().get_or_create(
-            name=self.__class__.__name__
+            name=self.__class__.__name__[-_STORAGE_NAME_LIMIT:]
         )
         kvs_id = kvs.get("id", "")
 
@@ -190,7 +191,7 @@ class ActorBenchmark:
                 tag,
             )
             if part
-        )
+        )[-_STORAGE_NAME_LIMIT:]
 
         dataset = await client.datasets().get_or_create(name=dataset_name)
         dataset_id = dataset.get("id", "")

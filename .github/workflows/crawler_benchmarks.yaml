@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       crawler_name_pattern:
-        description: Run only crawlers that are in folders whose name matches this patter
+        description: Run only crawlers that are in folders whose name matches this pattern
         required: true
         type: string
         default: .*(cheerio)|(parsel).*
@@ -18,24 +18,33 @@ on:
           "exclude":["https://**/products/**"],
           "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
           }
+      tag:
+        description: Name of the tag to be used for the benchmark
+        required: false
+        type: string
+        default: manual
+
   schedule:
-    - cron: '25 * * * *'
+    - cron: '0 2 * * *'
       inputs:
         crawler_name_pattern:
-          description: Run only crawlers that are in folders whose name matches this patter
           required: true
           type: string
           default: .*(cheerio)|(parsel).*
         crawler_input:
-          description: Crawler input JSON
           required: false
           type: string
           default: >
             {
             "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
-            "exclude":["https://**/products/**"],
+            "exclude":[],
             "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
             }
+        tag:
+          required: false
+          type: string
+          default: daily-master
+
 
 jobs:
   crawler_benchmarks:
@@ -76,6 +85,6 @@ jobs:
         run: make install-sync
 
       - name: Run crawler benchmark
-        run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}'
+        run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}' '${{ inputs.tag }}'
         env:
           APIFY_API_TOKEN: ${{ secrets.TEST_USER_APIFY_TEST_CRAWLEE_API_TOKEN }}

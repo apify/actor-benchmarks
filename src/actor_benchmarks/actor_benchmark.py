@@ -1,9 +1,9 @@
 import logging
 import os
+import statistics
 from dataclasses import field, dataclass, fields, asdict
-from datetime import datetime, timezone
-from functools import reduce
-from operator import add
+from datetime import datetime
+from numbers import Number
 from typing import Self
 
 from apify_client import ApifyClientAsync
@@ -31,6 +31,7 @@ class ActorBenchmarkMetadata:
     actor_inputs: dict = field(default_factory=dict)
     run_options: dict = field(default_factory=dict)
     actor_lock_file: str = field(default="", repr=False)
+    created: datetime = field(default_factory=datetime.now, repr=False, compare=False)
     custom_fields: dict[str, str] = field(
         default_factory=dict, repr=False, compare=False
     )
@@ -121,37 +122,86 @@ class ActorBenchmark:
                 raise ValueError("Incompatible benchmarks.")
 
         # Aggregate results
-        benchmark_field_names = {field.name for field in fields(cls)} - {"meta_data"}
-        benchmark_fields = {}
-        for benchmark_field_name in benchmark_field_names:
-            benchmark_fields[benchmark_field_name] = reduce(
-                add,
-                (
-                    getattr(benchmark, benchmark_field_name)
-                    for benchmark in actor_benchmarks
-                ),
-            ) / len(actor_benchmarks)
+        metric_fields = {}
 
-        return cls(meta_data=actor_benchmarks[0].meta_data, **benchmark_fields)
+        for metric_name in actor_benchmarks[0].get_metrics().keys():
+            metric_fields[metric_name] = statistics.mean(
+                (getattr(benchmark, metric_name) for benchmark in actor_benchmarks)
+            )
 
-    async def save_to_kvs(self) -> None:
-        """Save benchmark to kvs named as the class name. Key of the record is the current date and time."""
-        client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
+        return cls(meta_data=actor_benchmarks[0].meta_data, **metric_fields)
+
+    def get_metrics(self) -> dict[str, Number]:
+        """Return all the benchmark metrics without metadata"""
+        return {
+            field.name: getattr(self, field.name)
+            for field in fields(self)
+            if field.name != "meta_data"
+        }
+
+    def _get_kvs_key(self, tag: str = "") -> str:
+        url_datetime_format = "%Y-%m-%dT-%H-%M-%S"
+        return "-".join(
+            part
+            for part in (
+                self.meta_data.actor_name,
+                tag,
+                self.meta_data.created.strftime(url_datetime_format),
+            )
+            if part
+        )
+
+    async def save_to_kvs(self, tag: str = "") -> str:
+        """Save benchmark to kvs named as the class name. Key of the record is the `{actor}-{tag}-{datetime}`."""
+
         # Ensure kvs exists
+        client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
         kvs = await client.key_value_stores().get_or_create(
             name=self.__class__.__name__
         )
         kvs_id = kvs.get("id", "")
+
         # Store benchmark in kvs
-        record_key = f"{self.meta_data.actor_name}-{
-            datetime.now(tz=timezone.utc).strftime('%Y-%m-%dT%H-%M-%S')
-        }"
+        key = self._get_kvs_key(tag=tag)
+        link = f"https://api.apify.com/v2/key-value-stores/{kvs_id}/records/{key}"
         logger.info(
-            f"Saving benchmark to key value store: {kvs_id=} under key: {record_key}.\n"
-            f"Link: https://api.apify.com/v2/key-value-stores/{kvs_id}/records/{record_key}"
+            f"Saving benchmark to key value store: {kvs_id=} under key: {key}.\n"
+            f"Link: {link}"
         )
         await client.key_value_store(kvs_id).set_record(
-            key=record_key,
+            key=key,
             value=asdict(self),
             content_type="application/json",
         )
+        return link
+
+    async def save_metrics_to_dataset(
+        self, tag: str = "", kvs_details_link: str = ""
+    ) -> str:
+        """Save only metrics dataset. The name of the dataset is `{benchmark}-{actor}-{tag}`."""
+        client = ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
+        redash_datetime_format = "%Y-%m-%dT %H:%M:%S"
+        # Ensure dataset exists
+        dataset_name = "-".join(
+            part
+            for part in (
+                self.__class__.__name__,
+                self.meta_data.actor_name,
+                tag,
+            )
+            if part
+        )
+
+        dataset = await client.datasets().get_or_create(name=dataset_name)
+        dataset_id = dataset.get("id", "")
+
+        link = f"https://api.apify.com/v2/datasets/{dataset_id}/items?clean=true&format=json"
+        logger.info(
+            f"Adding benchmark metrics to dataset: {dataset_id=}.\nLink: {link}"
+        )
+
+        metrics: dict[str, Number | str] = {**self.get_metrics()}
+        metrics["datetime"] = self.meta_data.created.strftime(redash_datetime_format)
+        metrics["details"] = kvs_details_link
+        await client.dataset(dataset_id).push_items(metrics)
+        return link

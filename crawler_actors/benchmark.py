@@ -5,7 +5,6 @@ import re
 import typer
 import asyncio
 import subprocess
-from datetime import timedelta
 import pathlib
 from typing import Self, override
 
@@ -25,7 +24,7 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
     """Simple performance benchmark for measuring duration of run and number of valid results."""
 
     valid_result_count: int = 0
-    runtime: timedelta = timedelta(seconds=0)
+    runtime: float = 0.0
 
     @classmethod
     @override
@@ -48,7 +47,6 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
         run_data = await run_client.get()
         if run_data is None:
             raise ValueError("Missing run data.")
-        runtime = run_data["stats"]["runTimeSecs"]
 
         default_dataset_client = run_client.dataset()
         results = {
@@ -58,14 +56,14 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
         return cls(
             meta_data=meta_data,
             valid_result_count=len(results),
-            runtime=timedelta(seconds=runtime),
+            runtime=run_data["stats"]["runTimeSecs"],
         )
 
     def __str__(self) -> str:
         return (
             f"Actor: {self.meta_data.actor_name}, "
             f"Valid results: {self.valid_result_count}, "
-            f"Runtime: {self.runtime.total_seconds()}s, "
+            f"Runtime: {self.runtime} s, "
         )
 
 
@@ -130,7 +128,7 @@ async def _benchmark_runs(
 
 
 async def benchmark_actors(
-    actor_name_pattern: str, actor_input_json: str | None = None
+    actor_name_pattern: str, actor_input_json: str | None = None, tag: str = ""
 ) -> None:
     set_logging_config()
 
@@ -180,7 +178,9 @@ async def benchmark_actors(
             benchmark = await _benchmark_runs(
                 valid_runs, lock_file=_read_version_file(actor_dir)
             )
-            await benchmark.save_to_kvs()
+
+            kvs_link = await benchmark.save_to_kvs(tag=tag)
+            await benchmark.save_metrics_to_dataset(tag=tag, kvs_details_link=kvs_link)
 
         finally:
             # Delete the actor once it is no longer necessary.
@@ -203,10 +203,13 @@ benchmark_cli = typer.Typer()
 def run(
     actor_name_pattern: str = typer.Argument(default=r".*py"),
     actor_input_json: str | None = typer.Argument(default=None),
+    tag: str = typer.Argument(default=""),
 ) -> None:
     asyncio.run(
         benchmark_actors(
-            actor_name_pattern=actor_name_pattern, actor_input_json=actor_input_json
+            actor_name_pattern=actor_name_pattern,
+            actor_input_json=actor_input_json,
+            tag=tag,
         )
     )
 

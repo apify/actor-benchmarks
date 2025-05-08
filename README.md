@@ -1,2 +1,4 @@
 # actor-benchmarks
-Repository for Apify actor benchmarks
+Repository for various Apify actor benchmarks
+
+Repository contains small part of code reusable for different benchmarks in `src` folder. Other folders contain specific benchmarks for different actors and use cases. Each specific benchmark should contain own workflow that can be manually triggered. Such workflows can be used to run benchmarks even on unpublished changes. For example benchmarks from `crawler_actors` can be modified on branch so that all benchmarking actors are using branch specific changes from `crawlee` repository and then benchmark can be run on this branch. This allows for convenient performance evaluation of unmerged changes

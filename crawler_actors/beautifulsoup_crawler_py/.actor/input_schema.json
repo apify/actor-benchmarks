@@ -1,0 +1,42 @@
+{
+  "title": "BeautifulSoup Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "startUrls": {
+      "sectionCaption": "Basic configuration",
+      "title": "Start URLs",
+      "type": "array",
+      "description": "A static list of URLs to scrape.",
+      "editor": "requestListSources",
+      "prefill": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }],
+      "default": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }]
+    },
+    "exclude": {
+      "title": "Links to exclude",
+      "type": "array",
+      "description": "Links to exclude.",
+      "editor": "stringList",
+      "prefill": ["https://**/products/**"],
+      "default": ["https://**/products/**"]
+    },
+    "proxyConfiguration": {
+      "sectionCaption": "Proxy and HTTP configuration",
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "Specifies proxy servers that will be used by the scraper in order to hide its origin.",
+      "editor": "proxy",
+      "prefill": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": [ "SHADER" ],
+        "apifyProxyCountry": "US"
+      },
+      "default": {
+        "useApifyProxy": true,
+        "apifyProxyGroups": [ "SHADER" ],
+        "apifyProxyCountry": "US"
+      }
+    }
+  },
+  "required": ["startUrls", "exclude"]
+}

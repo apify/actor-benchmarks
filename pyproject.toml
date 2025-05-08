@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "actor_benchmarks"
 version = "0.0.1"
@@ -11,6 +15,7 @@ dependencies = [
     "crawlee[all]",
     "apify",
     "apify_client",
+    "typer>=0.15.2",
 ]
 
 
@@ -18,18 +23,16 @@ dependencies = [
 dev = [
     "mypy~=1.15.0",
     "pre-commit~=4.2.0",
-    "pytest-asyncio~=0.26.0",
-    "pytest-cov~=6.1.0",
-    "pytest-only~=2.1.0",
-    "pytest-xdist~=3.6.0",
-    "pytest~=8.3.0",
     "ruff~=0.11.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/actor_benchmarks"]
 
 [tool.mypy]
 python_version = "3.13"
 plugins = ["pydantic.mypy"]
-files = ["generic_actor_benchmarks"]
+files = ["src", "crawler_actors"]
 check_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_calls = true
@@ -40,3 +43,8 @@ warn_redundant_casts = true
 warn_return_any = true
 warn_unreachable = true
 warn_unused_ignores = true
+
+[tool.basedpyright]
+pythonVersion = "3.13"
+typeCheckingMode = "standard"
+include = ["src", "crawler_actors"]

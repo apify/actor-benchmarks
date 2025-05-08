@@ -1,0 +1,12 @@
+{
+	"actorSpecification": 1,
+	"name": "playwright-crawler-js-benchmark",
+	"title": "Project Playwright Crawler JavaScript",
+	"description": "Crawlee and Playwright project in JavaScript.",
+	"version": "0.0",
+	"meta": {
+		"templateId": "js-crawlee-playwright-chrome"
+	},
+	"input": "./input_schema.json",
+	"dockerfile": "./Dockerfile"
+}

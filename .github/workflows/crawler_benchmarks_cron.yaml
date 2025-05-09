@@ -5,32 +5,32 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
-  workflow_dispatch:
 
 jobs:
-  jobs:
-    http-crawlers:
-      name: Http crawlers benchmarks
-      uses: .github/workflows/crawler_benchmarks.yaml
-      with:
-        crawler_name_pattern: .*playwright.*
-        crawler_input: >
-          {
-          "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
-          "exclude":[],
-          "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
-          }
-        tag: daily-master
+  http-crawlers:
+    name: Http crawlers benchmarks
+    uses: ./.github/workflows/crawler_benchmarks.yaml
+    with:
+      crawler_name_pattern: .*(cheerio)|(parsel).*
+      crawler_input: >
+        {
+        "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
+        "exclude":[],
+        "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
+        }
+      tag: daily-master
+    secrets: inherit
 
-    playwright-crawlers:
-      name: Playwright crawlers benchmarks
-      uses: .github/workflows/crawler_benchmarks.yaml
-      with:
-        crawler_name_pattern: .*(cheerio)|(parsel).*
-        crawler_input: >
-          {
-          "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
-          "exclude":["https://**/products/**"],
-          "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
-          }
-        tag: daily-master
+  playwright-crawlers:
+    name: Playwright crawlers benchmarks
+    uses: ./.github/workflows/crawler_benchmarks.yaml
+    with:
+      crawler_name_pattern: .*playwright.*
+      crawler_input: >
+        {
+        "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
+        "exclude":["https://**/products/**"],
+        "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
+        }
+      tag: daily-master
+    secrets: inherit

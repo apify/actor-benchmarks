@@ -5,7 +5,7 @@ on:
     inputs:
       crawler_name_pattern:
         description: Run only crawlers that are in folders whose name matches this pattern
-        required: true
+        required: false
         type: string
         default: .*(cheerio)|(parsel).*
       crawler_input:
@@ -24,47 +24,17 @@ on:
         type: string
         default: manual
 
-  schedule:
-    - cron: '0 0 * * *'
-      inputs:
-        crawler_name_pattern:
-          required: true
-          type: string
-          default: .*(cheerio)|(parsel).*
-        crawler_input:
-          required: false
-          type: string
-          default: >
-            {
-            "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
-            "exclude":[],
-            "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
-            }
-        tag:
-          required: false
-          type: string
-          default: daily-master
-
-    - cron: '0 2 * * *'
-      inputs:
-        crawler_name_pattern:
-          required: true
-          type: string
-          default: .*playwright.*
-        crawler_input:
-          required: false
-          type: string
-          default: >
-            {
-            "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
-            "exclude":["https://**/products/**"],
-            "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
-            }
-        tag:
-          required: false
-          type: string
-          default: daily-master
-
+  workflow_call:
+    inputs:
+      crawler_name_pattern:
+        required: false
+        type: string
+      crawler_input:
+        required: false
+        type: string
+      tag:
+        required: false
+        type: string
 
 jobs:
   crawler_benchmarks:

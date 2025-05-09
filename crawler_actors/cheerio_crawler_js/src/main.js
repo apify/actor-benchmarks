@@ -26,12 +26,12 @@ const crawler = new CheerioCrawler({
         await enqueueLinks({ exclude });
 
         // Extract title from the page.
-        const title = $('title').text();
+        const title = $?.('title').text();
 
         // Save url and title to Dataset - a table-like storage.
-        await Dataset.pushData({ url: request.loadedUrl, title });
+        await Dataset.pushData({ url: request.loadedUrl, title: title || null });
     },
-    additionalMimeTypes: ['image/webp', 'image/jpeg'],
+    additionalMimeTypes: ['image/webp', 'image/jpeg', 'image/png'],
 });
 
 await crawler.run(startUrls);

@@ -10,6 +10,9 @@ requires-python = ">=3.9,<4.0"
 dependencies = [
     "crawlee[parsel]",
     "apify",
-    "certifi<=2025.1.31"
+    "certifi<=2025.1.31",
+    "pytest_asyncio",
+    "uvicorn",
+    "pytest"
 ]
 

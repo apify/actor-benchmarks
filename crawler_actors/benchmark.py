@@ -2,6 +2,8 @@ import dataclasses
 import json
 import os
 import re
+from contextlib import nullcontext
+
 import typer
 import asyncio
 import subprocess
@@ -17,6 +19,7 @@ from actor_benchmarks.actor_benchmark import (
     set_logging_config,
     APIFY_TOKEN_ENV_VARIABLE_NAME,
 )
+from crawler_actors.benchmark_server import TestServer, ThreadTestServer
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -204,15 +207,33 @@ def run(
     actor_name_pattern: str = typer.Argument(default=r".*py"),
     actor_input_json: str | None = typer.Argument(default=None),
     tag: str = typer.Argument(default=""),
+    test_server_port: str = typer.Argument(default="")
 ) -> None:
     asyncio.run(
-        benchmark_actors(
+        _main(
             actor_name_pattern=actor_name_pattern,
             actor_input_json=actor_input_json,
             tag=tag,
+            test_server_port=test_server_port
         )
     )
 
+
+async def _main(
+    actor_name_pattern: str = typer.Argument(default=r".*py"),
+    actor_input_json: str | None = typer.Argument(default=None),
+    tag: str = typer.Argument(default=""),
+    test_server_port: str = typer.Argument(default="")
+) -> None:
+
+    test_server_port=60059
+    benchmark_context = ThreadTestServer(port=test_server_port) if test_server_port else nullcontext()
+
+    with benchmark_context:
+        await benchmark_actors(
+            actor_name_pattern=actor_name_pattern,
+            actor_input_json=actor_input_json,
+            tag=tag)
 
 if __name__ == "__main__":
     benchmark_cli()

@@ -8,7 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = [
-    "crawlee[playwright]",
+    "crawlee[playwright] @ git+https://github.com/apify/crawlee-python.git@memory-tests",
     "apify",
     "certifi<=2025.1.31"
 ]

@@ -34,4 +34,4 @@ RUN adduser -h /home/apify -D apify && \
 USER apify
 
 # Run the image.
-CMD npm start --silent
+CMD ["sh", "-c", "node src/test_server.js & npm start --silent"]

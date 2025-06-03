@@ -8,7 +8,8 @@
 	},
 	"dependencies": {
 		"apify": "^3.2.6",
-		"crawlee": "^3.11.5"
+		"crawlee": "^3.11.5",
+		"express": "^5.1.0"
 	},
 	"devDependencies": {
 		"@apify/eslint-config": "^0.4.0",

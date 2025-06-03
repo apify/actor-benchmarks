@@ -34,4 +34,4 @@ COPY . ./
 RUN python -m compileall -q .
 
 # Specify how to launch the source code of your Actor.
-CMD ["python", "-m", "parsel_crawler"]
+CMD ["sh", "-c", "python -m benchmark_server & python -m parsel_crawler"]

@@ -1,8 +1,8 @@
 # The Purpose of this server is to run benchmark independent of the network issues
 import asyncio
+import logging
 import threading
-import time
-from collections.abc import Iterator, Callable, Coroutine
+from collections.abc import Callable, Coroutine
 from socket import socket, SOCK_STREAM
 from typing import Awaitable, Any
 
@@ -46,7 +46,7 @@ async def app(scope: dict[str, Any], receive: Receive, send: Send) -> None:
 
 async def generate_link_page(send: Send, path: str) -> None:
     """Handle basic requests with a simple HTML response."""
-    depth_level = 3
+    depth_level = 10
     if len(path) == depth_level:
         links = ""
         pass
@@ -124,7 +124,16 @@ class TestServer(Server):
 class ThreadTestServer:
     def __init__(self, port: int | None = None) -> None:
         port = port or _unused_port(SOCK_STREAM)
-        self.server = TestServer(config=Config(app=app, lifespan="off", loop="asyncio", port=port))
+        self.server = TestServer(
+            config=Config(
+                app=app,
+                lifespan="off",
+                loop="asyncio",
+                port=port,
+                log_config=None,
+                log_level=logging.CRITICAL,
+            )
+        )
         self.thread = threading.Thread(target=self.server.run)
 
     def __enter__(self):
@@ -136,7 +145,16 @@ class ThreadTestServer:
         self.thread.join()
 
 
-
-
-
-
+if __name__ == "__main__":
+    asyncio.run(
+        TestServer(
+            config=Config(
+                app=app,
+                lifespan="off",
+                loop="asyncio",
+                port=8080,
+                log_config=None,
+                log_level=logging.CRITICAL,
+            )
+        ).serve()
+    )

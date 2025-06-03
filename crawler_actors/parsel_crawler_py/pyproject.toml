@@ -11,8 +11,6 @@ dependencies = [
     "crawlee[parsel]",
     "apify",
     "certifi<=2025.1.31",
-    "pytest_asyncio",
-    "uvicorn",
-    "pytest"
+    "benchmark_server @ git+https://github.com/apify/actor-benchmarks.git@main#subdirectory=benchmark_server",
 ]
 

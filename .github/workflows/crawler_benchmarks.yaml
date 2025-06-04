@@ -14,15 +14,20 @@ on:
         type: string
         default: >
           {
-          "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
+          "startUrls":[{"url":"http://127.0.0.1:8080"}],
           "exclude":["https://**/products/**"],
-          "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
+          "maxRequestsPerCrawl": 2000,
+          "proxyConfiguration":{"useApifyProxy": false}
           }
       tag:
         description: Name of the tag to be used for the benchmark
         required: false
         type: string
         default: manual
+      repetitions:
+        required: false
+        type: string
+        default: "1"
 
   workflow_call:
     inputs:
@@ -33,6 +38,9 @@ on:
         required: false
         type: string
       tag:
+        required: false
+        type: string
+      repetitions:
         required: false
         type: string
 
@@ -75,6 +83,6 @@ jobs:
         run: make install-sync
 
       - name: Run crawler benchmark
-        run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}' '${{ inputs.tag }}'
+        run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}' '${{ inputs.tag }}' '${{ inputs.repetitions }}'
         env:
           APIFY_API_TOKEN: ${{ secrets.TEST_USER_APIFY_TEST_CRAWLEE_API_TOKEN }}

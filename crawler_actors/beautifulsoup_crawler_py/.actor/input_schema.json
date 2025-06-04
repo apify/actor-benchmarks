@@ -9,8 +9,8 @@
       "type": "array",
       "description": "A static list of URLs to scrape.",
       "editor": "requestListSources",
-      "prefill": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }],
-      "default": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }]
+      "prefill": [{ "url": "http://127.0.0.1:8080" }],
+      "default": [{ "url": "http://127.0.0.1:8080" }]
     },
     "exclude": {
       "title": "Links to exclude",
@@ -20,6 +20,14 @@
       "prefill": ["https://**/products/**"],
       "default": ["https://**/products/**"]
     },
+    "maxRequestsPerCrawl": {
+      "title": "Max requests per crawl",
+      "type": "integer",
+      "description": "Specifies the maximum amount of requests handled by the crawler.",
+      "minimum": 0,
+      "prefill": 100,
+      "default": 100
+    },
     "proxyConfiguration": {
       "sectionCaption": "Proxy and HTTP configuration",
       "title": "Proxy configuration",
@@ -27,14 +35,10 @@
       "description": "Specifies proxy servers that will be used by the scraper in order to hide its origin.",
       "editor": "proxy",
       "prefill": {
-        "useApifyProxy": true,
-        "apifyProxyGroups": [ "SHADER" ],
-        "apifyProxyCountry": "US"
+        "useApifyProxy": false
       },
       "default": {
-        "useApifyProxy": true,
-        "apifyProxyGroups": [ "SHADER" ],
-        "apifyProxyCountry": "US"
+        "useApifyProxy": false
       }
     }
   },

@@ -1,0 +1,17 @@
+{
+	"name": "benchmark-server-js",
+	"version": "0.0.1",
+	"type": "module",
+	"description": "This is a very simple server used for Actor benchmarking tests.",
+	"engines": {
+		"node": ">=18.0.0"
+	},
+	"dependencies": {
+		"express": "^5.1.0"
+	},
+	"scripts": {
+		"start": "node test_server.js"
+	},
+	"author": "It's not you it's me",
+	"license": "ISC"
+}

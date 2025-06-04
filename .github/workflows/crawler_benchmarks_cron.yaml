@@ -14,11 +14,29 @@ jobs:
       crawler_name_pattern: .*(cheerio)|(parsel).*
       crawler_input: >
         {
-        "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
-        "exclude":[],
-        "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
+        "startUrls":[{"url":"http://127.0.0.1:8080"}],
+        "exclude":["https://**/products/**"],
+        "maxRequestsPerCrawl": 2000,
+        "proxyConfiguration":{"useApifyProxy": false}
         }
       tag: daily-master
+      repetitions: 5
+    secrets: inherit
+
+  long-running-http-crawlers:
+    name: Http crawlers benchmarks
+    uses: ./.github/workflows/crawler_benchmarks.yaml
+    with:
+      crawler_name_pattern: .*(cheerio)|(parsel).*
+      crawler_input: >
+        {
+        "startUrls":[{"url":"http://127.0.0.1:8080"}],
+        "exclude":["https://**/products/**"],
+        "maxRequestsPerCrawl": 10000,
+        "proxyConfiguration":{"useApifyProxy": false}
+        }
+      tag: daily-master-long-running
+    repetitions: 1
     secrets: inherit
 
   playwright-crawlers:
@@ -28,9 +46,11 @@ jobs:
       crawler_name_pattern: .*playwright.*
       crawler_input: >
         {
-        "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
+        "startUrls":[{"url":"http://127.0.0.1:8080"}],
         "exclude":["https://**/products/**"],
-        "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
+        "maxRequestsPerCrawl": 2000,
+        "proxyConfiguration":{"useApifyProxy": false}
         }
       tag: daily-master
+      repetitions: 5
     secrets: inherit

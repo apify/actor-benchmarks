@@ -11,6 +11,5 @@ dependencies = [
     "crawlee[parsel]",
     "apify",
     "certifi<=2025.1.31",
-    "benchmark_server @ git+https://github.com/apify/actor-benchmarks.git@add-test-server#subdirectory=benchmark_server",
 ]
 

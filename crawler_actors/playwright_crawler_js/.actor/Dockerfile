@@ -31,7 +31,7 @@ COPY --chown=myuser . ./
 # Run the image. If you know you won't need headful browsers,
 # you can remove the XVFB start script for a micro perf gain.
 # Get the benchmark server
-RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js?add-test-server
+RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js
 
 # Specify how to launch the source code of your Actor.
 CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & ./start_xvfb_and_run_cmd.sh && npm start --silent"]

@@ -175,11 +175,21 @@ async def _benchmark_runs(
 
 
 async def benchmark_actors(
-    actor_name_pattern: str, actor_input_json: str | None = None, tag: str = ""
+    actor_name_pattern: str,
+    actor_input_json: str | None = None,
+    tag: str = "",
+    repetitions: int = 5,
 ) -> None:
-    set_logging_config()
+    """Benchmark pre created actor in this folder.
 
-    run_samples = 5
+    Args:
+        actor_name_pattern: Pattern to select which Actors to run.
+        actor_input_json: Actor input used in runs.
+        tag: Tag used to classify the benchmark purpose.
+        repetitions: The number of repetitions of each actor run.
+    """
+
+    set_logging_config()
 
     subprocess.run(
         ["apify", "login", "-t", os.environ[APIFY_TOKEN_ENV_VARIABLE_NAME]],
@@ -217,7 +227,7 @@ async def benchmark_actors(
         try:
             valid_runs = await _get_valid_run_ids(
                 actor_name=actor_name,
-                run_samples=run_samples,
+                run_samples=repetitions,
                 memory_mbytes=8192,
                 run_input=json.loads(actor_input_json) if actor_input_json else None,
             )
@@ -251,26 +261,15 @@ def run(
     actor_name_pattern: str = typer.Argument(default=r".*py"),
     actor_input_json: str | None = typer.Argument(default=None),
     tag: str = typer.Argument(default=""),
-    test_server_port: str = typer.Argument(default=""),
+    repetitions: int = typer.Argument(default=5),
 ) -> None:
     asyncio.run(
-        _main(
+        benchmark_actors(
             actor_name_pattern=actor_name_pattern,
             actor_input_json=actor_input_json,
             tag=tag,
+            repetitions=repetitions,
         )
-    )
-
-
-async def _main(
-    actor_name_pattern: str = typer.Argument(default=r".*py"),
-    actor_input_json: str | None = typer.Argument(default=None),
-    tag: str = typer.Argument(default=""),
-) -> None:
-    await benchmark_actors(
-        actor_name_pattern=actor_name_pattern,
-        actor_input_json=actor_input_json,
-        tag=tag,
     )
 
 

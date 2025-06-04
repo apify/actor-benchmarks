@@ -179,7 +179,7 @@ async def benchmark_actors(
 ) -> None:
     set_logging_config()
 
-    run_samples = 10
+    run_samples = 5
 
     subprocess.run(
         ["apify", "login", "-t", os.environ[APIFY_TOKEN_ENV_VARIABLE_NAME]],

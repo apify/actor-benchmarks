@@ -13,11 +13,13 @@ const {
     startUrls = ['https://apify.com'],
     exclude = [],
     proxyConfiguration = null,
+    maxRequestsPerCrawl = 100,
 } = await Actor.getInput() ?? {};
 
 const proxyConfigurationObj = proxyConfiguration ? await Actor.createProxyConfiguration(proxyConfiguration) : await Actor.createProxyConfiguration();
 
 const crawler = new CheerioCrawler({
+    maxRequestsPerCrawl,
     proxyConfiguration: proxyConfigurationObj,
     async requestHandler({ enqueueLinks, request, $, log }) {
         log.info(`Processing ${request.url} ...`);

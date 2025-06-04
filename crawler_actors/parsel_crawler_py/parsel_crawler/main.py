@@ -14,7 +14,8 @@ async def main() -> None:
             actor_proxy_input=actor_input.get("proxyConfiguration")
         )
         crawler_kwargs: BasicCrawlerOptions[ParselCrawlingContext] = {
-            "concurrency_settings": ConcurrencySettings(desired_concurrency=10)
+            "concurrency_settings": ConcurrencySettings(desired_concurrency=10),
+            "max_requests_per_crawl": actor_input.get("maxRequestsPerCrawl"),
         }
         if proxy:
             crawler_kwargs["proxy_configuration"] = proxy

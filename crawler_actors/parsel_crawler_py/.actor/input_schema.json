@@ -20,6 +20,14 @@
       "prefill": ["https://**/products/**"],
       "default": ["https://**/products/**"]
     },
+    "maxRequestsPerCrawl": {
+      "title": "Max requests per crawl",
+      "type": "integer",
+      "description": "Specifies the maximum amount of requests handled by the crawler.",
+      "minimum": 0,
+      "prefill": 100,
+      "default": 100
+    },
     "proxyConfiguration": {
       "sectionCaption": "Proxy and HTTP configuration",
       "title": "Proxy configuration",

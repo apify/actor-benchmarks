@@ -15,10 +15,11 @@ async def main() -> None:
     async with Actor:
         actor_input = await Actor.get_input() or {}
         proxy = await Actor.create_proxy_configuration(
-            actor_proxy_input=actor_input.get("proxyConfiguration")
+            actor_proxy_input=actor_input.get("proxyConfiguration"),
         )
         crawler_kwargs: PlaywrightCrawlerOptions = {
             "headless": True,
+            "max_requests_per_crawl": actor_input.get("maxRequestsPerCrawl"),
         }
         if proxy:
             crawler_kwargs["proxy_configuration"] = proxy

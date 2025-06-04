@@ -5,7 +5,7 @@ const PORT = 8080;
 
 const args = process.argv.slice(2);
 // The only argument controls to which depth level the links to next level are generated
-const DEPTH_LEVEL = parseInt(args[0]) || 4;
+const DEPTH_LEVEL = parseInt(args[0]) || 10;
 
 // Function to generate HTML response
 function generateHtmlResponse(path) {

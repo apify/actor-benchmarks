@@ -18,6 +18,7 @@ const {
     startUrls = ['https://apify.com'],
     exclude = [],
     proxyConfiguration = null,
+    maxRequestsPerCrawl = 100,
 } = await Actor.getInput() ?? {};
 
 const proxyConfigurationObj = proxyConfiguration ? await Actor.createProxyConfiguration(proxyConfiguration) : await Actor.createProxyConfiguration();
@@ -37,6 +38,7 @@ router.addDefaultHandler(async ({ request, enqueueLinks, page, log }) => {
 });
 
 const crawler = new PlaywrightCrawler({
+    maxRequestsPerCrawl,
     proxyConfiguration: proxyConfigurationObj,
     requestHandler: router,
     launchContext: {

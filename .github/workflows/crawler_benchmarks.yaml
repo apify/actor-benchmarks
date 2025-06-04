@@ -16,6 +16,7 @@ on:
           {
           "startUrls":[{"url":"http://127.0.0.1:8080"}],
           "exclude":["https://**/products/**"],
+          "maxRequestsPerCrawl": 2000,
           "proxyConfiguration":{"useApifyProxy": false}
           }
       tag:

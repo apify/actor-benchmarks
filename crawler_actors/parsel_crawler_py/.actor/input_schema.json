@@ -9,8 +9,8 @@
       "type": "array",
       "description": "A static list of URLs to scrape.",
       "editor": "requestListSources",
-      "prefill": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }],
-      "default": [{ "url": "https://warehouse-theme-metal.myshopify.com/" }]
+      "prefill": [{ "url": "https://127.0.0.1:8080" }],
+      "default": [{ "url": "https://127.0.0.1:8080" }]
     },
     "exclude": {
       "title": "Links to exclude",
@@ -27,14 +27,10 @@
       "description": "Specifies proxy servers that will be used by the scraper in order to hide its origin.",
       "editor": "proxy",
       "prefill": {
-        "useApifyProxy": true,
-        "apifyProxyGroups": [ "SHADER" ],
-        "apifyProxyCountry": "US"
+        "useApifyProxy": false
       },
       "default": {
-        "useApifyProxy": true,
-        "apifyProxyGroups": [ "SHADER" ],
-        "apifyProxyCountry": "US"
+        "useApifyProxy": false
       }
     }
   },

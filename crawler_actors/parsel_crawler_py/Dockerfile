@@ -33,5 +33,16 @@ COPY . ./
 # Use compileall to ensure the runnability of the Actor Python code.
 RUN python -m compileall -q .
 
+# Install node and npm for running the benchmark server
+RUN apt update && apt install -yq curl \
+    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt install -yq nodejs \
+    && node --version \
+    && npm --version \
+    && apt clean && rm -rf /var/lib/apt/lists/* \
+
+# Get the benchmark server
+RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js?add-test-server
+
 # Specify how to launch the source code of your Actor.
-CMD ["sh", "-c", "python -m benchmark_server & python -m parsel_crawler"]
+CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & python -m parsel_crawler"]

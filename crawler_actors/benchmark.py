@@ -2,6 +2,7 @@ import dataclasses
 import json
 import os
 import re
+from datetime import datetime
 
 import typer
 import asyncio
@@ -54,10 +55,16 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             (item["title"], item["url"])
             async for item in default_dataset_client.iterate_items()
         }
+
+        # Subtract the docker pull time as that is a random noise irrelevant for the benchmark
+        benchmark_runtime = run_data["stats"][
+            "runTimeSecs"
+        ] - await CrawlerPerformanceBenchmark._get_docker_image_pull_time(run_id)
+
         return cls(
             meta_data=meta_data,
             valid_result_count=len(results),
-            runtime=run_data["stats"]["runTimeSecs"],
+            runtime=benchmark_runtime,
         )
 
     def __str__(self) -> str:
@@ -66,6 +73,45 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             f"Valid results: {self.valid_result_count}, "
             f"Runtime: {self.runtime} s, "
         )
+
+    @staticmethod
+    async def _get_docker_image_pull_time(run_id: str) -> float:
+        """Get the time it took to pull the Docker image.
+
+        Example log:
+        2025-06-04T08:27:18.665Z ACTOR: Pulling Docker image of build hLtWx6tpFjza9NbRl from registry.
+        2025-06-04T08:27:23.025Z ACTOR: Creating Docker container.
+        ...
+        """
+        date_pattern = r"(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)"
+        start_docker_pull_pattern = (
+            rf"{date_pattern}(?: ACTOR: Pulling Docker image of build)"
+        )
+        end_docker_pull_pattern = (
+            rf"{date_pattern}(?: ACTOR: Creating Docker container.)"
+        )
+
+        log = await (
+            ApifyClientAsync(token=os.getenv(APIFY_TOKEN_ENV_VARIABLE_NAME))
+            .run(run_id=run_id)
+            .log()
+            .get()
+        )
+
+        if not log:
+            return 0.0
+
+        start_match = re.search(start_docker_pull_pattern, log)
+        end_match = re.search(end_docker_pull_pattern, log)
+
+        if start_match and end_match:
+            start_time = datetime.fromisoformat(
+                start_match.group(1).replace("Z", "+00:00")
+            )
+            end_time = datetime.fromisoformat(end_match.group(1).replace("Z", "+00:00"))
+            return (end_time - start_time).total_seconds()
+
+        return 0.0
 
 
 async def _get_valid_run_ids(

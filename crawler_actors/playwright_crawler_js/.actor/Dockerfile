@@ -34,5 +34,5 @@ COPY --chown=myuser . ./
 RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js?add-test-server
 
 # Specify how to launch the source code of your Actor.
-CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & ./start_xvfb_and_run_cmd.sh && npm start --silent"]
+CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js 3 & ./start_xvfb_and_run_cmd.sh && npm start --silent"]
 

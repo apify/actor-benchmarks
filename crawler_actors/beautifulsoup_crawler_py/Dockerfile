@@ -45,4 +45,4 @@ RUN apt update && apt install -yq curl \
 RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js?add-test-server
 
 # Specify how to launch the source code of your Actor.
-CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & beautifulsoup_crawler"]
+CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js 5 & python -m beautifulsoup_crawler"]

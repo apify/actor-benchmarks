@@ -5,7 +5,7 @@ const PORT = 8080;
 
 // Function to generate HTML response
 function generateHtmlResponse(path) {
-    const depthLevel = 10;
+    const depthLevel = 4;
     let links = '';
 
     if (path.length !== depthLevel) {

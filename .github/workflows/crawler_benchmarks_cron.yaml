@@ -14,9 +14,9 @@ jobs:
       crawler_name_pattern: .*(cheerio)|(parsel).*
       crawler_input: >
         {
-        "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
-        "exclude":[],
-        "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
+        "startUrls":[{"url":"http://127.0.0.1:8080"}],
+        "exclude":["https://**/products/**"],
+        "proxyConfiguration":{"useApifyProxy": false}
         }
       tag: daily-master
     secrets: inherit
@@ -28,9 +28,9 @@ jobs:
       crawler_name_pattern: .*playwright.*
       crawler_input: >
         {
-        "startUrls":[{"url":"https://warehouse-theme-metal.myshopify.com/"}],
+        "startUrls":[{"url":"http://127.0.0.1:8080"}],
         "exclude":["https://**/products/**"],
-        "proxyConfiguration":{"useApifyProxy": true,"apifyProxyGroups":["SHADER"],"apifyProxyCountry":"US"}
+        "proxyConfiguration":{"useApifyProxy": false}
         }
       tag: daily-master
     secrets: inherit

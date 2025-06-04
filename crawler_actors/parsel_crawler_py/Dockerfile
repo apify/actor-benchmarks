@@ -39,7 +39,7 @@ RUN apt update && apt install -yq curl \
     && apt install -yq nodejs \
     && node --version \
     && npm --version \
-    && apt clean && rm -rf /var/lib/apt/lists/* \
+    && apt clean && rm -rf /var/lib/apt/lists/*
 
 # Get the benchmark server
 RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js?add-test-server

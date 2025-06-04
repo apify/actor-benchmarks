@@ -17,10 +17,10 @@ await Actor.init();
 const {
     startUrls = ['https://apify.com'],
     exclude = [],
-    proxyConfigurationInput = null,
+    proxyConfiguration = null,
 } = await Actor.getInput() ?? {};
 
-const proxyConfiguration = proxyConfigurationInput ? await Actor.createProxyConfiguration(proxyConfigurationInput) : await Actor.createProxyConfiguration();
+const proxyConfigurationObj = proxyConfiguration ? await Actor.createProxyConfiguration(proxyConfiguration) : await Actor.createProxyConfiguration();
 
 export const router = createPlaywrightRouter();
 
@@ -37,7 +37,7 @@ router.addDefaultHandler(async ({ request, enqueueLinks, page, log }) => {
 });
 
 const crawler = new PlaywrightCrawler({
-    proxyConfiguration,
+    proxyConfiguration: proxyConfigurationObj,
     requestHandler: router,
     launchContext: {
         launchOptions: {

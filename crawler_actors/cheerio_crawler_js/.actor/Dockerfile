@@ -33,5 +33,8 @@ RUN adduser -h /home/apify -D apify && \
     chown -R apify:apify ./
 USER apify
 
+# Get the benchmark server
+RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js?add-test-server
+
 # Run the image.
-CMD ["sh", "-c", "node src/test_server.js & npm start --silent"]
+CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & npm start --silent"]

@@ -9,8 +9,8 @@
       "type": "array",
       "description": "A static list of URLs to scrape.",
       "editor": "requestListSources",
-      "prefill": [{ "url": "https://127.0.0.1:8080" }],
-      "default": [{ "url": "https://127.0.0.1:8080" }]
+      "prefill": [{ "url": "http://127.0.0.1:8080" }],
+      "default": [{ "url": "http://127.0.0.1:8080" }]
     },
     "exclude": {
       "title": "Links to exclude",

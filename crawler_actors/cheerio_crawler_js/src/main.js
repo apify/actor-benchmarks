@@ -9,17 +9,16 @@ import { CheerioCrawler, Dataset } from 'crawlee';
 // The init() call configures the Actor for its environment. It's recommended to start every Actor with an init()
 await Actor.init();
 
-// Structure of input is defined in input_schema.json
 const {
     startUrls = ['https://apify.com'],
     exclude = [],
-    proxyConfigurationInput = null,
+    proxyConfiguration = null,
 } = await Actor.getInput() ?? {};
 
-const proxyConfiguration = proxyConfigurationInput ? await Actor.createProxyConfiguration(proxyConfigurationInput) : await Actor.createProxyConfiguration();
+const proxyConfigurationObj = proxyConfiguration ? await Actor.createProxyConfiguration(proxyConfiguration) : await Actor.createProxyConfiguration();
 
 const crawler = new CheerioCrawler({
-    proxyConfiguration,
+    proxyConfiguration: proxyConfigurationObj,
     async requestHandler({ enqueueLinks, request, $, log }) {
         log.info(`Processing ${request.url} ...`);
 

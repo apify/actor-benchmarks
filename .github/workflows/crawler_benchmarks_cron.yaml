@@ -24,7 +24,7 @@ jobs:
     secrets: inherit
 
   long-running-http-crawlers:
-    name: Http crawlers benchmarks
+    name: Long running Http crawlers benchmarks
     uses: ./.github/workflows/crawler_benchmarks.yaml
     with:
       crawler_name_pattern: .*(cheerio)|(parsel).*
@@ -36,7 +36,7 @@ jobs:
         "proxyConfiguration":{"useApifyProxy": false}
         }
       tag: daily-master-long-running
-    repetitions: 1
+      repetitions: 1
     secrets: inherit
 
   playwright-crawlers:

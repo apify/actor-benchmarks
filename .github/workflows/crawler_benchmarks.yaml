@@ -28,6 +28,10 @@ on:
         required: false
         type: string
         default: "1"
+      regenerate_actor_lock_files:
+        required: false
+        type: boolean
+        default: false
 
   workflow_call:
     inputs:
@@ -43,6 +47,9 @@ on:
       repetitions:
         required: false
         type: string
+      regenerate_actor_lock_files:
+        required: false
+        type: boolean
 
 jobs:
   crawler_benchmarks:
@@ -83,6 +90,6 @@ jobs:
         run: make install-sync
 
       - name: Run crawler benchmark
-        run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}' '${{ inputs.tag }}' '${{ inputs.repetitions }}'
+        run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}' '${{ inputs.tag }}' '${{ inputs.repetitions }}' '${{ inputs.regenerate_actor_lock_files }}'
         env:
           APIFY_API_TOKEN: ${{ secrets.TEST_USER_APIFY_TEST_CRAWLEE_API_TOKEN }}

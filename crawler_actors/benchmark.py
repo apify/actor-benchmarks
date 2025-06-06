@@ -179,6 +179,7 @@ async def benchmark_actors(
     actor_input_json: str | None = None,
     tag: str = "",
     repetitions: int = 5,
+    regenerate_lock_files: bool = False,
 ) -> None:
     """Benchmark pre created actor in this folder.
 
@@ -187,6 +188,7 @@ async def benchmark_actors(
         actor_input_json: Actor input used in runs.
         tag: Tag used to classify the benchmark purpose.
         repetitions: The number of repetitions of each actor run.
+        regenerate_lock_files: Will force regenerate lock files in the actor directories.
     """
 
     set_logging_config()
@@ -214,6 +216,10 @@ async def benchmark_actors(
         with open(actor_dir / ".actor" / "actor.json") as f:
             actor_name = f"{user_name}~{json.load(f)['name']}"
             logger.info(f"{actor_name=}")
+
+        if regenerate_lock_files:
+            logger.info(f"Regenerating lock file for actor: {actor_name}")
+            _regenerate_lock_files(actor_dir)
 
         logger.info(f"Building actor: {actor_name}")
         subprocess.run(
@@ -245,12 +251,20 @@ async def benchmark_actors(
 
 
 def _read_version_file(directory: pathlib.Path) -> str:
-    version_files = ["uv.lock", "poetry.lock", "package-lock.json"]
+    version_files = ["uv.lock", "package-lock.json"]
     for version_file in version_files:
         if (path := directory / version_file).exists():
             with open(path) as f:
                 return f.read()
     return ""
+
+
+def _regenerate_lock_files(directory: pathlib.Path) -> None:
+    """Regenerate lock files in the given directory to allow update of unpinned dependencies."""
+    if (directory / "uv.lock").exists():
+        subprocess.run(["uv", "lock"], check=True, cwd=directory)
+    if (directory / "package-lock.json").exists():
+        subprocess.run(["npm", "install", "--package-lock"], check=True, cwd=directory)
 
 
 benchmark_cli = typer.Typer()
@@ -262,6 +276,7 @@ def run(
     actor_input_json: str | None = typer.Argument(default=None),
     tag: str = typer.Argument(default=""),
     repetitions: int = typer.Argument(default=5),
+    regenerate_lock_files: bool = typer.Argument(default=False),
 ) -> None:
     asyncio.run(
         benchmark_actors(
@@ -269,6 +284,7 @@ def run(
             actor_input_json=actor_input_json,
             tag=tag,
             repetitions=repetitions,
+            regenerate_lock_files=regenerate_lock_files,
         )
     )
 

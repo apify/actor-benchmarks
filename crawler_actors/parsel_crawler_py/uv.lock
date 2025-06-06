@@ -210,7 +210,7 @@ wheels = [
 
 [[package]]
 name = "crawlee"
-version = "0.6.10"
+version = "0.6.11b5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "apify-fingerprint-datapoints" },
@@ -232,9 +232,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ed/93/20033411bffaf199e44b759fc45be45fabc1d8c357bc4d0bb080713724dc/crawlee-0.6.10.tar.gz", hash = "sha256:a06e9aa19611868712df81ca4b7dc482633f921456bf3cf1a5432ce3836fd432", size = 24135107, upload-time = "2025-06-02T12:10:17.67Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/a1/23/e5d57cea9b863a8635565d09eafb63e34cc53ba49433e4bcb6f5d44ddf59/crawlee-0.6.11b5.tar.gz", hash = "sha256:b58614f25cebb15e261a60e49f91a6f5b8489ca1de378fe169cf5ebdf5dc016c", size = 24133104, upload-time = "2025-06-06T06:56:03.468Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5a/12/2c6c41438f24760ebe044d5e88eebb35c51178de9aec39b695d0845cbff7/crawlee-0.6.10-py3-none-any.whl", hash = "sha256:081565d0a3f11d21798ec11929f4b0c17e3ba7a84f33251c9b6b0e6457d05367", size = 260863, upload-time = "2025-06-02T12:10:14.994Z" },
+    { url = "https://files.pythonhosted.org/packages/3b/80/c54a15d0f6349b368c795bf83b313d2ded382d8e160f462ff6c767d1de44/crawlee-0.6.11b5-py3-none-any.whl", hash = "sha256:caecf84cdd30b4eecee3a820fe02c0efd27b7579865b1b2f100e747b4c5ca073", size = 260918, upload-time = "2025-06-06T06:56:00.349Z" },
 ]
 
 [package.optional-dependencies]
@@ -531,7 +531,7 @@ dependencies = [
 requires-dist = [
     { name = "apify" },
     { name = "certifi", specifier = "<=2025.1.31" },
-    { name = "crawlee", extras = ["parsel"] },
+    { name = "crawlee", extras = ["parsel"], specifier = ">=0.6.11b0" },
 ]
 
 [[package]]

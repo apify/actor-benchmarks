@@ -21,6 +21,7 @@ jobs:
         }
       tag: daily-master
       repetitions: 5
+      regenerate_actor_lock_files: true
     secrets: inherit
 
   long-running-http-crawlers:
@@ -37,6 +38,7 @@ jobs:
         }
       tag: daily-master-long-running
       repetitions: 1
+      regenerate_actor_lock_files: true
     secrets: inherit
 
   playwright-crawlers:
@@ -53,4 +55,5 @@ jobs:
         }
       tag: daily-master
       repetitions: 5
+      regenerate_actor_lock_files: true
     secrets: inherit

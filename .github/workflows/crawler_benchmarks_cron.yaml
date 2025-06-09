@@ -26,6 +26,7 @@ jobs:
 
   long-running-http-crawlers:
     name: Long running Http crawlers benchmarks
+    needs: http-crawlers
     uses: ./.github/workflows/crawler_benchmarks.yaml
     with:
       crawler_name_pattern: .*(cheerio)|(parsel).*
@@ -43,6 +44,7 @@ jobs:
 
   playwright-crawlers:
     name: Playwright crawlers benchmarks
+    needs: long-running-http-crawlers
     uses: ./.github/workflows/crawler_benchmarks.yaml
     with:
       crawler_name_pattern: .*playwright.*

@@ -8,8 +8,8 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "crawlee[parsel]>=0.6.11b",
-    "apify",
+    "crawlee[parsel] @ git+https://github.com/apify/crawlee-python.git@master",
+    "apify @ git+https://github.com/apify/apify-sdk-python.git@new-apify-storage-clients",
     "certifi<=2025.1.31",
 ]
 

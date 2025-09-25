@@ -24,9 +24,27 @@ jobs:
       regenerate_actor_lock_files: true
     secrets: inherit
 
+  http-crawlers-crawlee-dev:
+    name: Http crawlers benchmarks - crawlee.dev
+    needs: http-crawlers
+    uses: ./.github/workflows/crawler_benchmarks.yaml
+    with:
+      crawler_name_pattern: .*(cheerio)|(parsel).*
+      crawler_input: >
+        {
+        "startUrls":[{"url":"https://crawlee.dev/"}],
+        "exclude":["https://**/products/**"],
+        "maxRequestsPerCrawl": 10000,
+        "proxyConfiguration":{"useApifyProxy": false}
+        }
+      tag: daily-master
+      repetitions: 1
+      regenerate_actor_lock_files: true
+    secrets: inherit
+
   long-running-http-crawlers:
     name: Long running Http crawlers benchmarks
-    needs: http-crawlers
+    needs: http-crawlers-crawlee-dev
     uses: ./.github/workflows/crawler_benchmarks.yaml
     with:
       crawler_name_pattern: .*(cheerio)|(parsel).*

@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 
 [[package]]
@@ -210,13 +210,12 @@ wheels = [
 
 [[package]]
 name = "crawlee"
-version = "0.6.11b5"
+version = "0.6.12"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "apify-fingerprint-datapoints" },
     { name = "browserforge" },
     { name = "cachetools" },
-    { name = "certifi" },
     { name = "colorama" },
     { name = "eval-type-backport" },
     { name = "httpx", extra = ["brotli", "http2", "zstd"] },
@@ -232,9 +231,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "yarl" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a1/23/e5d57cea9b863a8635565d09eafb63e34cc53ba49433e4bcb6f5d44ddf59/crawlee-0.6.11b5.tar.gz", hash = "sha256:b58614f25cebb15e261a60e49f91a6f5b8489ca1de378fe169cf5ebdf5dc016c", size = 24133104, upload-time = "2025-06-06T06:56:03.468Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/56/3f/e8321d2339bf539f2c0d634e82900795eb810415bb25d0519b852ec6dc9e/crawlee-0.6.12.tar.gz", hash = "sha256:ab1785c1b3f71ebe3af84abe0a74b9e1de0f6516c9fac94a9a0f2df1efcb1387", size = 24156909, upload-time = "2025-07-30T11:45:49.563Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3b/80/c54a15d0f6349b368c795bf83b313d2ded382d8e160f462ff6c767d1de44/crawlee-0.6.11b5-py3-none-any.whl", hash = "sha256:caecf84cdd30b4eecee3a820fe02c0efd27b7579865b1b2f100e747b4c5ca073", size = 260918, upload-time = "2025-06-06T06:56:00.349Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/f8/baf96096c5e283eca7e7424c81e47c605c9937ca45252d69eb317e4ed7d3/crawlee-0.6.12-py3-none-any.whl", hash = "sha256:4969ee0139550153187c3a31e70ba45cfd708aca007cbc21e43b39b9b50e74d3", size = 263738, upload-time = "2025-07-30T11:45:46.572Z" },
 ]
 
 [package.optional-dependencies]
@@ -531,7 +530,7 @@ dependencies = [
 requires-dist = [
     { name = "apify" },
     { name = "certifi", specifier = "<=2025.1.31" },
-    { name = "crawlee", extras = ["parsel"], specifier = ">=0.6.11b0" },
+    { name = "crawlee", extras = ["parsel"], specifier = ">=0.6.12" },
 ]
 
 [[package]]

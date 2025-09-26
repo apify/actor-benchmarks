@@ -27,6 +27,7 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
 
     valid_result_count: int = 0
     runtime: float = 0.0
+    total_cost_usd: float = 0.0
 
     @classmethod
     @override
@@ -65,6 +66,7 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             meta_data=meta_data,
             valid_result_count=len(results),
             runtime=benchmark_runtime,
+            total_cost_usd=run_data.get("usageTotalUsd", 0.0),
         )
 
     def __str__(self) -> str:
@@ -72,6 +74,7 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             f"Actor: {self.meta_data.actor_name}, "
             f"Valid results: {self.valid_result_count}, "
             f"Runtime: {self.runtime} s, "
+            f"Costs: {self.total_cost_usd} USD, "
         )
 
     @staticmethod
@@ -225,7 +228,7 @@ async def benchmark_actors(
 
         logger.info(f"Building actor: {actor_name}")
         subprocess.run(
-            ["apify", "push", "--force", "--no-prompt"],
+            ["apify", "push", "--force"],
             capture_output=True,
             check=True,
             cwd=actor_dir,

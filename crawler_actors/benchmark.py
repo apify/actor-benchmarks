@@ -267,7 +267,11 @@ def _read_version_file(directory: pathlib.Path) -> str:
 def _regenerate_lock_files(directory: pathlib.Path) -> None:
     """Regenerate lock files in the given directory to allow update of unpinned dependencies."""
     if (directory / "uv.lock").exists():
-        subprocess.run(["uv", "lock"], check=True, cwd=directory)
+        subprocess.run(
+            ["uv", "lock", "-P", "crawlee", "-P", "apify", "-P", "apify-client"],
+            check=True,
+            cwd=directory,
+        )
     if (directory / "package-lock.json").exists():
         subprocess.run(["npm", "install", "--package-lock"], check=True, cwd=directory)
 

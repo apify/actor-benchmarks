@@ -37,7 +37,7 @@ jobs:
         "maxRequestsPerCrawl": 10000,
         "proxyConfiguration":{"useApifyProxy": false}
         }
-      tag: daily-master
+      tag: daily-master-crawlee-dev
       repetitions: 1
       regenerate_actor_lock_files: true
     secrets: inherit

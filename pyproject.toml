@@ -12,7 +12,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "crawlee[all]==0.6.0",
+    "crawlee[all]>=0.6.0",
     "apify",
     "apify_client",
     "typer>=0.15.2",

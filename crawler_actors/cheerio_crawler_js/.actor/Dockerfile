@@ -2,7 +2,7 @@
 # the available images at https://docs.apify.com/sdk/js/docs/guides/docker-images
 # You can also use any other image from Docker Hub.
 FROM apify/actor-node:20
-RUN apt update && apt install -yq git && rm -rf /var/lib/apt/lists/*
+RUN apk add git
 
 # Check preinstalled packages
 RUN npm ls crawlee apify puppeteer playwright
@@ -38,4 +38,4 @@ USER apify
 RUN npm install github:apify/actor-benchmarks
 
 # Run the image.
-CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & npm start --silent"]
+CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/benchmark_server_js/test_server.js & npm start --silent"]

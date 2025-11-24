@@ -2,7 +2,7 @@
 # the available images at https://crawlee.dev/docs/guides/docker-images
 # You can also use any other image from Docker Hub.
 FROM apify/actor-node-playwright-chrome:20
-RUN apt update && apt install -yq git && rm -rf /var/lib/apt/lists/*
+RUN apk add git
 
 # Check preinstalled packages
 RUN npm ls crawlee apify puppeteer playwright
@@ -35,5 +35,5 @@ COPY --chown=myuser . ./
 RUN npm install github:apify/actor-benchmarks
 
 # Specify how to launch the source code of your Actor.
-CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & ./start_xvfb_and_run_cmd.sh && npm start --silent"]
+CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/benchmark_server_js/test_server.js & ./start_xvfb_and_run_cmd.sh && npm start --silent"]
 

@@ -45,4 +45,4 @@ RUN apt update && apt install -yq curl \
 RUN npm install github:apify/actor-benchmarks
 
 # Specify how to launch the source code of your Actor.
-CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & python -m beautifulsoup_crawler"]
+CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/benchmark_server_js/test_server.js & python -m beautifulsoup_crawler"]

@@ -9,6 +9,9 @@
 	"dependencies": {
 		"express": "^5.1.0"
 	},
+	"bin": {
+    	"test-server": "node benchmark_server_js/test_server.js"
+	},
 	"scripts": {
 		"start": "node benchmark_server_js/test_server.js"
 	},

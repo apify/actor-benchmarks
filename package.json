@@ -10,7 +10,7 @@
 		"express": "^5.1.0"
 	},
 	"scripts": {
-		"start": "node test_server.js"
+		"start": "node benchmark_server_js/test_server.js"
 	},
 	"author": "It's not you it's me",
 	"license": "ISC"

@@ -2,6 +2,7 @@
 # the available images at https://docs.apify.com/sdk/js/docs/guides/docker-images
 # You can also use any other image from Docker Hub.
 FROM apify/actor-node:20
+RUN apt update && apt install -yq git && rm -rf /var/lib/apt/lists/*
 
 # Check preinstalled packages
 RUN npm ls crawlee apify puppeteer playwright
@@ -34,7 +35,7 @@ RUN adduser -h /home/apify -D apify && \
 USER apify
 
 # Get the benchmark server
-RUN npm install https://gitpkg.vercel.app/apify/actor-benchmarks/benchmark_server_js
+RUN npm install github:apify/actor-benchmarks
 
 # Run the image.
 CMD ["sh", "-c", "node ./node_modules/benchmark-server-js/test_server.js & npm start --silent"]

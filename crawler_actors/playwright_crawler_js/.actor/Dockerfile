@@ -2,7 +2,6 @@
 # the available images at https://crawlee.dev/docs/guides/docker-images
 # You can also use any other image from Docker Hub.
 FROM apify/actor-node-playwright-chrome:20
-RUN apk add git
 
 # Check preinstalled packages
 RUN npm ls crawlee apify puppeteer playwright

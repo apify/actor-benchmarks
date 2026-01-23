@@ -25,6 +25,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "mypy~=1.15.0",
+    "poethepoet<1.0.0",
     "pre-commit~=4.2.0",
     "ruff~=0.11.0",
 ]
@@ -51,3 +52,18 @@ warn_unused_ignores = true
 pythonVersion = "3.13"
 typeCheckingMode = "standard"
 include = ["src", "crawler_actors"]
+
+[tool.poe.tasks]
+clean = "rm -rf .mypy_cache .pytest_cache .ruff_cache build dist htmlcov .coverage"
+install-sync = "uv sync --all-extras"
+type-check = "uv run mypy"
+check-code = ["lint", "type-check"]
+
+[tool.poe.tasks.install-dev]
+shell = "uv sync --all-extras && uv run pre-commit install && uv run playwright install"
+
+[tool.poe.tasks.lint]
+shell = "uv run ruff format --check && uv run ruff check"
+
+[tool.poe.tasks.format]
+shell = "uv run ruff check --fix && uv run ruff format"

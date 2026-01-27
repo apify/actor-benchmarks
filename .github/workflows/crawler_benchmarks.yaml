@@ -87,7 +87,7 @@ jobs:
           python-version: ${{ env.python-version }}
 
       - name: Install Python dependencies
-        run: make install-sync
+        run: uv run poe install-sync
 
       - name: Run crawler benchmark
         run: python ./crawler_actors/benchmark.py '${{ inputs.crawler_name_pattern }}' '${{ inputs.crawler_input }}' '${{ inputs.tag }}' '${{ inputs.repetitions }}' '${{ inputs.regenerate_actor_lock_files }}'

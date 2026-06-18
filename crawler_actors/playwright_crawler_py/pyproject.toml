@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.9,<4.0"
 dependencies = [
     "crawlee[playwright]>=0.6.12",
-    "apify",
+    "apify @ git+https://github.com/apify/apify-sdk-python.git@fix/rq-cache-commit-on-success",
     "certifi<=2025.1.31"
 ]
 

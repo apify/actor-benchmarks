@@ -58,15 +58,17 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
         }
 
         # Subtract the docker container start time as that is a random noise irrelevant for the benchmark of the crawler
-        benchmark_runtime = run_data["stats"][
-            "runTimeSecs"
-        ] - await CrawlerPerformanceBenchmark._get_docker_container_start_time(run_id)
+        benchmark_runtime = (
+            run_data.stats.run_time_secs
+            or 0
+            - await CrawlerPerformanceBenchmark._get_docker_container_start_time(run_id)
+        )
 
         return cls(
             meta_data=meta_data,
             valid_result_count=len(results),
             runtime=benchmark_runtime,
-            total_cost_usd=run_data.get("usageTotalUsd", 0.0),
+            total_cost_usd=run_data.usage_total_usd or 0,
         )
 
     def __str__(self) -> str:
@@ -138,7 +140,7 @@ async def _get_valid_run_ids(
         started_run_data = await actor_client.start(
             run_input=run_input, memory_mbytes=memory_mbytes
         )
-        actor_run = client.run(started_run_data["id"])
+        actor_run = client.run(started_run_data.id)
         finished_run_data = await actor_run.wait_for_finish()
 
         if finished_run_data is None:
@@ -146,16 +148,16 @@ async def _get_valid_run_ids(
 
         # Check migrationCount once available. finished_run_data["stats"]["migrationCount"]>0
         # if finished_run_data["stats"]["migrationCount"]>0 or finished_run_data['status'] != 'SUCCEEDED':
-        if finished_run_data["status"] != "SUCCEEDED":
+        if finished_run_data.status != "SUCCEEDED":
             # Actor failed or migration occurred during run. Run is not suitable for a benchmark.
             logger.info("Actor run not suitable for benchmark.")
             logger.info(
-                f"Actor run status: {finished_run_data['status']}, migration count: {0}"
+                f"Actor run status: {finished_run_data.status}, migration count: {0}"
             )
             continue
 
         logger.info("Actor run successfully finished.")
-        valid_run_ids.append(finished_run_data["id"])
+        valid_run_ids.append(finished_run_data.id)
 
     return valid_run_ids
 
@@ -209,7 +211,7 @@ async def benchmark_actors(
     user = await client.user().get()
 
     if user is not None:
-        user_name = user["username"]
+        user_name = user.username
     else:
         raise RuntimeError("Missing user data")
 

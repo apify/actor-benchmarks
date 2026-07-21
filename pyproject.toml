@@ -13,7 +13,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "crawlee[all]>=0.6.0",
-    "apify",
+    "apify>=4.0.0",
     "apify_client",
     "typer>=0.15.2",
     "pytest",
@@ -24,7 +24,7 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "mypy~=1.15.0",
+    "ty~=0.0.0",
     "poethepoet<1.0.0",
     "pre-commit~=4.2.0",
     "ruff~=0.11.0",
@@ -56,7 +56,7 @@ include = ["src", "crawler_actors"]
 [tool.poe.tasks]
 clean = "rm -rf .mypy_cache .pytest_cache .ruff_cache build dist htmlcov .coverage"
 install-sync = "uv sync --all-extras"
-type-check = "uv run mypy"
+type-check = "uv run ty check"
 check-code = ["lint", "type-check"]
 
 [tool.poe.tasks.install-dev]

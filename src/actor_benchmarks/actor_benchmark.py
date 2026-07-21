@@ -7,6 +7,7 @@ from numbers import Number
 from typing import Self
 
 from apify_client import ApifyClientAsync
+from apify_client._models import RunOptions
 
 logger = logging.getLogger("benchmark_logger")
 
@@ -30,7 +31,11 @@ class ActorBenchmarkMetadata:
     actor_name: str = ""
     benchmark_version: str = ""
     actor_inputs: dict = field(default_factory=dict)
-    run_options: dict = field(default_factory=dict)
+    run_options: RunOptions = field(
+        default_factory=lambda: RunOptions(
+            build="Dummy", timeout_secs=1, memory_mbytes=128, disk_mbytes=128
+        )
+    )
     actor_lock_file: str = field(default="", repr=False)
     created: datetime = field(default_factory=datetime.now, repr=False, compare=False)
     custom_fields: dict[str, str] = field(
@@ -51,10 +56,10 @@ class ActorBenchmarkMetadata:
         if run is None:
             raise ValueError("Run not found.")
 
-        if actor := await client.actor(run["actId"]).get():
-            actor_name = actor["name"]
+        if actor := await client.actor(run.act_id).get():
+            actor_name = actor.name
         else:
-            actor_name = run["actId"]
+            actor_name = run.act_id
 
         actor_input = await (run_client.key_value_store()).get_record("INPUT")
         if actor_input is None:
@@ -65,7 +70,7 @@ class ActorBenchmarkMetadata:
         return cls(
             actor_name=actor_name,
             actor_inputs=actor_input_value,
-            run_options=run["options"],
+            run_options=run.options,
             actor_lock_file=actor_lock_file,
             benchmark_version=benchmark_version,
             custom_fields=custom_fields or {},
@@ -160,7 +165,7 @@ class ActorBenchmark:
         kvs = await client.key_value_stores().get_or_create(
             name=self.__class__.__name__[-_STORAGE_NAME_LIMIT:]
         )
-        kvs_id = kvs.get("id", "")
+        kvs_id = kvs.id
 
         # Store benchmark in kvs
         key = self._get_kvs_key(tag=tag)
@@ -194,7 +199,7 @@ class ActorBenchmark:
         )[-_STORAGE_NAME_LIMIT:]
 
         dataset = await client.datasets().get_or_create(name=dataset_name)
-        dataset_id = dataset.get("id", "")
+        dataset_id = dataset.id
 
         link = f"https://api.apify.com/v2/datasets/{dataset_id}/items?clean=true&format=json"
         logger.info(

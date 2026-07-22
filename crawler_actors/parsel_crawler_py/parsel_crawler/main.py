@@ -4,10 +4,19 @@ from typing import Any
 from apify import Actor
 from crawlee import Glob, ConcurrencySettings
 from crawlee.crawlers import ParselCrawler, ParselCrawlingContext, BasicCrawlerOptions
+from crawlee import service_locator
+from apify.storage_clients import ApifyStorageClient, SmartApifyStorageClient
 
 
 async def main() -> None:
     """The crawler entry point."""
+
+    service_locator.set_storage_client(
+        SmartApifyStorageClient(
+            cloud_storage_client=ApifyStorageClient(request_queue_access="shared")
+        ),
+    )
+
     async with Actor:
         actor_input = await Actor.get_input() or {}
         proxy = await Actor.create_proxy_configuration(

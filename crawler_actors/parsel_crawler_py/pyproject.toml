@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "crawlee[parsel]>=0.6.12",
-    "apify @ git+https://github.com/apify/apify-sdk-python.git@worktree-fix-b2",
+    "apify",
     "certifi<=2025.1.31",
 ]
 

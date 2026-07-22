@@ -14,7 +14,7 @@ wheels = [
 [[package]]
 name = "apify"
 version = "4.0.0"
-source = { git = "https://github.com/apify/apify-sdk-python.git?rev=worktree-fix-b2#f3be1be29aced1b551edd5a709fd17c41450c299" }
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "apify-client", extra = ["brotli"] },
     { name = "cachetools" },
@@ -27,6 +27,10 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "websockets" },
     { name = "yarl" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/31/e8/1c2cc7d93875d4c1d4920f25e92c84e5cf9312a64174262ffb581b9f044f/apify-4.0.0.tar.gz", hash = "sha256:14853f298f16b9f9dd37f68e5f36bc81cfe82116a0714bc227174e012ac41324", size = 116949, upload-time = "2026-07-20T09:35:42.717Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/db/d7/954f76b2d0e07866557fc701c285cf77acbe35ca711eaaeff687a88a49ca/apify-4.0.0-py3-none-any.whl", hash = "sha256:8bedfbee68861a08cb91145714b626a03bb781494b8941de107b562485b1d35d", size = 123927, upload-time = "2026-07-20T09:35:41.232Z" },
 ]
 
 [[package]]
@@ -426,7 +430,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "apify", git = "https://github.com/apify/apify-sdk-python.git?rev=worktree-fix-b2" },
+    { name = "apify" },
     { name = "certifi", specifier = "<=2025.1.31" },
     { name = "crawlee", extras = ["parsel"], specifier = ">=0.6.12" },
 ]

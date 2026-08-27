@@ -77,3 +77,21 @@ jobs:
       repetitions: 5
       regenerate_actor_lock_files: true
     secrets: inherit
+
+  one-request-http-crawlers:
+    name: One request Http crawlers benchmarks
+    needs: playwright-crawlers
+    uses: ./.github/workflows/crawler_benchmarks.yaml
+    with:
+      crawler_name_pattern: .*(cheerio)|(parsel).*
+      crawler_input: >
+        {
+        "startUrls":[{"url":"http://127.0.0.1:8080"}],
+        "exclude":["https://**/products/**"],
+        "maxRequestsPerCrawl": 1,
+        "proxyConfiguration":{"useApifyProxy": false}
+        }
+      tag: daily-master-one-request
+      repetitions: 100
+      regenerate_actor_lock_files: true
+    secrets: inherit

@@ -28,6 +28,13 @@
       "prefill": 100,
       "default": 100
     },
+    "desiredConcurrency": {
+      "title": "Desired concurrency",
+      "type": "integer",
+      "description": "Specifies the desired concurrency of the crawler. If not present, the crawler defaults to 10.",
+      "minimum": 1,
+      "prefill": 10
+    },
     "proxyConfiguration": {
       "sectionCaption": "Proxy and HTTP configuration",
       "title": "Proxy configuration",

@@ -2,7 +2,7 @@ from re import Pattern
 from typing import Any
 
 from apify import Actor
-from crawlee import Glob
+from crawlee import Glob, ConcurrencySettings
 from crawlee.crawlers import (
     PlaywrightCrawler,
     PlaywrightCrawlingContext,
@@ -19,6 +19,9 @@ async def main() -> None:
         )
         crawler_kwargs: PlaywrightCrawlerOptions = {
             "headless": True,
+            "concurrency_settings": ConcurrencySettings(
+                desired_concurrency=actor_input.get("desiredConcurrency", 10)
+            ),
             "max_requests_per_crawl": actor_input.get("maxRequestsPerCrawl"),
         }
         if proxy:

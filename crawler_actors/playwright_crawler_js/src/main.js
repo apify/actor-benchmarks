@@ -19,6 +19,7 @@ const {
     exclude = [],
     proxyConfiguration = null,
     maxRequestsPerCrawl = 100,
+    desiredConcurrency = 10,
 } = await Actor.getInput() ?? {};
 
 const proxyConfigurationObj = proxyConfiguration ? await Actor.createProxyConfiguration(proxyConfiguration) : await Actor.createProxyConfiguration();
@@ -39,6 +40,7 @@ router.addDefaultHandler(async ({ request, enqueueLinks, page, log }) => {
 
 const crawler = new PlaywrightCrawler({
     maxRequestsPerCrawl,
+    autoscaledPoolOptions: { desiredConcurrency },
     proxyConfiguration: proxyConfigurationObj,
     requestHandler: router,
     launchContext: {

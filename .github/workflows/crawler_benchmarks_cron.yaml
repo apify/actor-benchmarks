@@ -89,6 +89,7 @@ jobs:
         "startUrls":[{"url":"http://127.0.0.1:8080"}],
         "exclude":["https://**/products/**"],
         "maxRequestsPerCrawl": 1,
+        "desiredConcurrency": 1,
         "proxyConfiguration":{"useApifyProxy": false}
         }
       tag: daily-master-one-request

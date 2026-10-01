@@ -1,0 +1,26 @@
+name: Benchmark runtime alert
+
+on:
+  workflow_run:
+    workflows: ["Crawler benchmarks cron"]
+    types: [completed]
+
+jobs:
+  runtime_alert:
+    name: Benchmark runtime alert
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up uv package manager
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check benchmark runtimes
+        run: uv run --with apify_client --no-project python ./crawler_actors/runtime_alert.py
+        env:
+          APIFY_API_TOKEN: ${{ secrets.TEST_USER_APIFY_TEST_CRAWLEE_API_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_BENCHMARK_WEBHOOK_URL }}
+          NOT_BEFORE: ${{ github.event.workflow_run.run_started_at }}

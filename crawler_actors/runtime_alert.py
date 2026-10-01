@@ -36,7 +36,7 @@ def main() -> None:
             .list_items(desc=True, limit=HISTORY_SIZE + 1, clean=True)
             .items
         )
-        if len(items) < HISTORY_SIZE:
+        if len(items) < HISTORY_SIZE + 1:
             # Ignore benchmarks without enough samples
             continue
 
@@ -47,13 +47,13 @@ def main() -> None:
 
         mean = statistics.mean(item["runtime"] for item in previous)
         print(
-            f"Mean of {HISTORY_SIZE} last measurements: {mean}\n"
-            f"New sample:                   {latest['runtime']}"
+            f"Mean of {HISTORY_SIZE} last measurements: {mean:.4f}\n"
+            f"New sample:                   {latest['runtime']:.4f}"
         )
         difference = (latest["runtime"] - mean) / mean
         if abs(difference) > THRESHOLD:
             warnings.append(
-                f"`<{latest['details']}|{nice_name}>`: runtime {latest['runtime']:.1f} s is {difference:+.0%} "
+                f"<{latest['details']}|`{nice_name}`>: runtime {latest['runtime']:.1f} s is {difference:+.0%} "
                 f"vs mean {mean:.1f} s of last {len(previous)} runs. "
             )
 

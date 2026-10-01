@@ -59,10 +59,8 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
 
         # Subtract the docker container start time as that is a random noise irrelevant for the benchmark of the crawler
         benchmark_runtime = (
-            run_data.stats.run_time_secs
-            or 0
-            - await CrawlerPerformanceBenchmark._get_docker_container_start_time(run_id)
-        )
+            run_data.stats.run_time_secs or 0
+        ) - await CrawlerPerformanceBenchmark._get_docker_container_start_time(run_id)
 
         return cls(
             meta_data=meta_data,

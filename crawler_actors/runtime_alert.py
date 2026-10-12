@@ -11,7 +11,7 @@ from apify_client import ApifyClient
 
 DATASET_NAME_PATTERN = os.getenv("DATASET_NAME_PATTERN", "daily-master")
 HISTORY_SIZE = 10
-THRESHOLD = 0.15
+THRESHOLD = 0.30
 DATETIME_FORMAT = "%Y-%m-%dT %H:%M:%S"
 
 

@@ -21,6 +21,13 @@ from actor_benchmarks.actor_benchmark import (
 )
 
 
+UV_PACKAGES_TO_UPDATE = ("crawlee", "apify", "apify-client")
+"""Python packages updated to their latest versions when the lock files are regenerated."""
+
+NPM_PACKAGES_TO_UPDATE = ("crawlee", "apify", "playwright")
+"""JS packages updated to their latest versions when the lock files are regenerated."""
+
+
 @dataclasses.dataclass(kw_only=True)
 class CrawlerPerformanceBenchmark(ActorBenchmark):
     """Simple performance benchmark for measuring duration of run and number of valid results."""
@@ -265,15 +272,44 @@ def _read_version_file(directory: pathlib.Path) -> str:
 
 
 def _regenerate_lock_files(directory: pathlib.Path) -> None:
-    """Regenerate lock files in the given directory to allow update of unpinned dependencies."""
+    """Regenerate lock files in the given directory to update the benchmarked packages to their latest versions.
+
+    Only the benchmarked packages are updated, the remaining dependencies stay as they are in the lock file.
+    """
     if (directory / "uv.lock").exists():
         subprocess.run(
-            ["uv", "lock", "-P", "crawlee", "-P", "apify", "-P", "apify-client"],
+            [
+                "uv",
+                "lock",
+                *(arg for package in UV_PACKAGES_TO_UPDATE for arg in ("-P", package)),
+            ],
             check=True,
             cwd=directory,
         )
     if (directory / "package-lock.json").exists():
-        subprocess.run(["npm", "install", "--package-lock"], check=True, cwd=directory)
+        # `npm install --package-lock` keeps the versions already present in the lock file, so the JS actors would
+        # stay on the committed versions forever. Install the latest release of each benchmarked package instead.
+        # This also rewrites the version ranges in `package.json`, which is fine, as neither file is committed back
+        # and `apify push` uploads the actor directory as it is.
+        with open(directory / "package.json") as f:
+            dependencies = json.load(f).get("dependencies", {})
+        packages_to_update = [
+            f"{package}@latest"
+            for package in NPM_PACKAGES_TO_UPDATE
+            if package in dependencies
+        ]
+        subprocess.run(
+            [
+                "npm",
+                "install",
+                "--package-lock-only",
+                "--no-audit",
+                "--no-fund",
+                *packages_to_update,
+            ],
+            check=True,
+            cwd=directory,
+        )
 
 
 benchmark_cli = typer.Typer()

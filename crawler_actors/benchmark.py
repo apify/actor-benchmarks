@@ -287,9 +287,6 @@ def _regenerate_lock_files(directory: pathlib.Path) -> None:
             cwd=directory,
         )
     if (directory / "package-lock.json").exists():
-        # `npm install --package-lock` keeps the versions already present in the lock file, so the JS actors would
-        # stay on the committed versions forever. `npm update` moves the named packages to the newest versions
-        # allowed by `package.json`, and ignores names that are not dependencies of the actor.
         subprocess.run(
             [
                 "npm",

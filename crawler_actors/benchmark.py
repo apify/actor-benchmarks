@@ -288,24 +288,16 @@ def _regenerate_lock_files(directory: pathlib.Path) -> None:
         )
     if (directory / "package-lock.json").exists():
         # `npm install --package-lock` keeps the versions already present in the lock file, so the JS actors would
-        # stay on the committed versions forever. Install the latest release of each benchmarked package instead.
-        # This also rewrites the version ranges in `package.json`, which is fine, as neither file is committed back
-        # and `apify push` uploads the actor directory as it is.
-        with open(directory / "package.json") as f:
-            dependencies = json.load(f).get("dependencies", {})
-        packages_to_update = [
-            f"{package}@latest"
-            for package in NPM_PACKAGES_TO_UPDATE
-            if package in dependencies
-        ]
+        # stay on the committed versions forever. `npm update` moves the named packages to the newest versions
+        # allowed by `package.json`, and ignores names that are not dependencies of the actor.
         subprocess.run(
             [
                 "npm",
-                "install",
+                "update",
                 "--package-lock-only",
                 "--no-audit",
                 "--no-fund",
-                *packages_to_update,
+                *NPM_PACKAGES_TO_UPDATE,
             ],
             check=True,
             cwd=directory,

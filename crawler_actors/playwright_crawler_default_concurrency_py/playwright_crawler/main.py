@@ -6,6 +6,7 @@ from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
 from crawlee.crawlers._playwright._playwright_crawler import PlaywrightCrawlerOptions
 
 from ._platform import PlatformIO, create_proxy_configuration
+from ._sampling import ConcurrencySampler
 
 
 async def main() -> None:
@@ -50,4 +51,5 @@ async def main() -> None:
 
         await context.enqueue_links(exclude=exclude)
 
-    await crawler.run(start_urls)
+    sampler = ConcurrencySampler(crawler, platform)
+    await sampler.run(crawler.run(start_urls))

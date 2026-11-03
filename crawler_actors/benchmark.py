@@ -2,6 +2,7 @@ import dataclasses
 import json
 import os
 import re
+import statistics
 from datetime import datetime
 
 import typer
@@ -27,6 +28,9 @@ UV_PACKAGES_TO_UPDATE = ("crawlee", "apify", "apify-client")
 NPM_PACKAGES_TO_UPDATE = ("crawlee", "apify", "playwright")
 """JS packages updated to their latest versions when the lock files are regenerated."""
 
+CONCURRENCY_SAMPLES_KEY = "CONCURRENCY_SAMPLES"
+"""Key of the record in the run's default key-value store where the concurrency benchmark actors store their samples."""
+
 
 @dataclasses.dataclass(kw_only=True)
 class CrawlerPerformanceBenchmark(ActorBenchmark):
@@ -35,6 +39,13 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
     valid_result_count: int = 0
     runtime: float = 0.0
     total_cost_usd: float = 0.0
+    avg_desired_concurrency: float = 0.0
+    """Mean desired concurrency over the concurrency samples, zero when the actor stores none."""
+    concurrency_samples: dict[str, list[dict]] = dataclasses.field(
+        default_factory=dict, repr=False, metadata={"metric": False}
+    )
+    """Concurrency samples the actor stored during the run, keyed by run id. Aggregation collects the samples of all
+    the runs, and they are kept in the detailed KVS record only."""
 
     @classmethod
     @override
@@ -69,11 +80,22 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             run_data.stats.run_time_secs or 0
         ) - await CrawlerPerformanceBenchmark._get_docker_container_start_time(run_id)
 
+        samples_record = await run_client.key_value_store().get_record(
+            CONCURRENCY_SAMPLES_KEY
+        )
+        samples = samples_record["value"]["samples"] if samples_record else []
+        desired_concurrencies = [sample["desired_concurrency"] for sample in samples]
+        avg_desired_concurrency = (
+            statistics.mean(desired_concurrencies) if desired_concurrencies else 0.0
+        )
+
         return cls(
             meta_data=meta_data,
             valid_result_count=len(results),
             runtime=benchmark_runtime,
             total_cost_usd=run_data.usage_total_usd or 0,
+            avg_desired_concurrency=avg_desired_concurrency,
+            concurrency_samples={run_id: samples} if samples else {},
         )
 
     def __str__(self) -> str:
@@ -82,6 +104,7 @@ class CrawlerPerformanceBenchmark(ActorBenchmark):
             f"Valid results: {self.valid_result_count}, "
             f"Runtime: {self.runtime} s, "
             f"Costs: {self.total_cost_usd} USD, "
+            f"Avg desired concurrency: {self.avg_desired_concurrency}, "
         )
 
     @staticmethod

@@ -135,14 +135,31 @@ class ActorBenchmark:
                 (getattr(benchmark, metric_name) for benchmark in actor_benchmarks)
             )
 
-        return cls(meta_data=actor_benchmarks[0].meta_data, **metric_fields)
+        aggregated = cls(meta_data=actor_benchmarks[0].meta_data, **metric_fields)
+
+        # A detail field holding a dict collects the entries of all the benchmarks.
+        for detail_field in fields(cls):
+            if detail_field.name == "meta_data" or detail_field.metadata.get(
+                "metric", True
+            ):
+                continue
+            merged = getattr(aggregated, detail_field.name)
+            if isinstance(merged, dict):
+                for benchmark in actor_benchmarks:
+                    merged.update(getattr(benchmark, detail_field.name))
+
+        return aggregated
 
     def get_metrics(self) -> dict[str, Number]:
-        """Return all the benchmark metrics without metadata"""
+        """Return all the benchmark metrics without metadata.
+
+        A field declared with `metadata={"metric": False}` holds details rather than a metric, so it is left out and
+        not aggregated.
+        """
         return {
             field.name: getattr(self, field.name)
             for field in fields(self)
-            if field.name != "meta_data"
+            if field.name != "meta_data" and field.metadata.get("metric", True)
         }
 
     def _get_kvs_key(self, tag: str = "") -> str:

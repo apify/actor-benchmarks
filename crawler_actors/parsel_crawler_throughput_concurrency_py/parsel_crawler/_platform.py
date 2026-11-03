@@ -12,7 +12,7 @@ from typing import Any
 
 from apify_client import ApifyClientAsync
 from crawlee.proxy_configuration import ProxyConfiguration
-from crawlee.storages import Dataset
+from crawlee.storages import Dataset, KeyValueStore
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ def is_at_home() -> bool:
 
 
 class PlatformIO:
-    """Reads the Actor input and pushes results to the run's default dataset."""
+    """Reads the Actor input and writes to the run's default dataset and key-value store."""
 
     def __init__(self) -> None:
         self._client: ApifyClientAsync | None = None
@@ -59,6 +59,18 @@ class PlatformIO:
 
         dataset_client = self._client.dataset(os.environ["ACTOR_DEFAULT_DATASET_ID"])
         await dataset_client.push_items(item)
+
+    async def set_value(self, key: str, value: Any) -> None:
+        """Store a JSON value under `key` in the run's default key-value store."""
+        if self._client is None:
+            kvs = await KeyValueStore.open()
+            await kvs.set_value(key, value)
+            return
+
+        kvs_client = self._client.key_value_store(
+            os.environ["ACTOR_DEFAULT_KEY_VALUE_STORE_ID"]
+        )
+        await kvs_client.set_record(key, value, content_type="application/json")
 
 
 def create_proxy_configuration(

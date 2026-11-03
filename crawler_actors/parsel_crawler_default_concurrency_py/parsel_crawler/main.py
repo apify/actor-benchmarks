@@ -5,6 +5,7 @@ from crawlee import Glob, ConcurrencySettings
 from crawlee.crawlers import ParselCrawler, ParselCrawlingContext, BasicCrawlerOptions
 
 from ._platform import PlatformIO, create_proxy_configuration
+from ._sampling import ConcurrencySampler
 
 
 async def main() -> None:
@@ -42,4 +43,5 @@ async def main() -> None:
         await platform.push_data({"url": context.request.loaded_url, "title": title})
         await context.enqueue_links(exclude=exclude)
 
-    await crawler.run(start_urls)
+    sampler = ConcurrencySampler(crawler, platform)
+    await sampler.run(crawler.run(start_urls))

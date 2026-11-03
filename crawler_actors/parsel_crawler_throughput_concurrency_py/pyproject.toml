@@ -1,0 +1,19 @@
+[project]
+name = "parsel_crawler"
+version = "0.0.1"
+description = "Parsel crawler benchmark using the throughput concurrency system from apify/crawlee-python#2328."
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "crawlee[parsel]",
+    "apify-client",
+    "certifi<=2025.1.31",
+]
+
+# Both concurrency benchmark actors install crawlee from the branch of apify/crawlee-python#2328,
+# so the only difference between them is the concurrency system.
+[tool.uv.sources]
+crawlee = { git = "https://github.com/Mantisus/crawlee-python", branch = "autoscale-convergence" }

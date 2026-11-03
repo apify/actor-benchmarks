@@ -5,9 +5,9 @@ Repository contains small part of code reusable for different benchmarks in `src
 
 ## Concurrency system benchmarks
 
-`crawler_actors/parsel_crawler_default_concurrency_py` and `crawler_actors/parsel_crawler_throughput_concurrency_py` are two copies of the Parsel crawler that differ only in the concurrency system: the first uses the default `ConcurrencySystem`, the second the `ThroughputConcurrencySystem` from [apify/crawlee-python#2328](https://github.com/apify/crawlee-python/pull/2328). Both install crawlee from that PR's branch, pinned in their `uv.lock`, and talk to the platform through `apify-client` because the Apify SDK does not support the crawlee v2 branch yet. Regenerating the lock files moves them to the latest commit of the branch.
+`crawler_actors/parsel_crawler_default_concurrency_py` and `crawler_actors/parsel_crawler_throughput_concurrency_py` are two copies of the Parsel crawler, and `crawler_actors/playwright_crawler_default_concurrency_py` and `crawler_actors/playwright_crawler_throughput_concurrency_py` two copies of the Playwright crawler, that differ only in the concurrency system: the `default` ones use the default `ConcurrencySystem`, the `throughput` ones the `ThroughputConcurrencySystem` from [apify/crawlee-python#2328](https://github.com/apify/crawlee-python/pull/2328). Both install crawlee from that PR's branch, pinned in their `uv.lock`, and talk to the platform through `apify-client` because the Apify SDK does not support the crawlee v2 branch yet. Regenerating the lock files moves them to the latest commit of the branch.
 
-To compare them, run the `Crawler benchmarks` workflow with `crawler_name_pattern` set to `.*concurrency.*`, for example against crawlee.dev:
+To compare them, run the `Crawler benchmarks` workflow with `crawler_name_pattern` set to `.*concurrency.*`, or `.*parsel.*concurrency.*` and `.*playwright.*concurrency.*` for one crawler kind, for example against crawlee.dev:
 
 ```json
 {
@@ -18,4 +18,4 @@ To compare them, run the `Crawler benchmarks` workflow with `crawler_name_patter
 }
 ```
 
-To run one of them locally, put the input into `storage/key_value_stores/default/INPUT.json` in the actor directory and run `uv run python -m parsel_crawler` there. Results land in `storage/datasets/default`.
+To run one of them locally, put the input into `storage/key_value_stores/default/INPUT.json` in the actor directory and run `uv run python -m parsel_crawler` or `uv run python -m playwright_crawler` there. Results land in `storage/datasets/default`.

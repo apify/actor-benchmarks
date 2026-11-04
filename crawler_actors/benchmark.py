@@ -28,6 +28,9 @@ UV_PACKAGES_TO_UPDATE = ("crawlee", "apify", "apify-client")
 NPM_PACKAGES_TO_UPDATE = ("crawlee", "apify", "playwright")
 """JS packages updated to their latest versions when the lock files are regenerated."""
 
+DEFAULT_MEMORY_MBYTES = 8192
+"""Memory of a benchmark run, unless the actor's `actor.json` sets `defaultRunOptions.memoryMbytes`."""
+
 CONCURRENCY_SAMPLES_KEY = "CONCURRENCY_SAMPLES"
 """Key of the record in the run's default key-value store where the concurrency benchmark actors store their samples."""
 
@@ -249,8 +252,12 @@ async def benchmark_actors(
         if not re.findall(actor_name_pattern, str(actor_dir)):
             continue
         with open(actor_dir / ".actor" / "actor.json") as f:
-            actor_name = f"{user_name}~{json.load(f)['name']}"
-            logger.info(f"{actor_name=}")
+            actor_config = json.load(f)
+        actor_name = f"{user_name}~{actor_config['name']}"
+        memory_mbytes = actor_config.get("defaultRunOptions", {}).get(
+            "memoryMbytes", DEFAULT_MEMORY_MBYTES
+        )
+        logger.info(f"{actor_name=} {memory_mbytes=}")
 
         if regenerate_lock_files:
             logger.info(f"Regenerating lock file for actor: {actor_name}")
@@ -269,7 +276,7 @@ async def benchmark_actors(
             valid_runs = await _get_valid_run_ids(
                 actor_name=actor_name,
                 run_samples=repetitions,
-                memory_mbytes=8192,
+                memory_mbytes=memory_mbytes,
                 run_input=json.loads(actor_input_json) if actor_input_json else None,
             )
 

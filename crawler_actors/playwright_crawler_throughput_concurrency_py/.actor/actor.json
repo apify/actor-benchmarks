@@ -4,5 +4,8 @@
 	"version": "0.0",
 	"buildTag": "latest",
 	"environmentVariables": {},
-	"input": "./input_schema.json"
+	"input": "./input_schema.json",
+	"defaultRunOptions": {
+		"memoryMbytes": 32768
+	}
 }

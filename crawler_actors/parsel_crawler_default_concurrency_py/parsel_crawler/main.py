@@ -52,4 +52,6 @@ async def main() -> None:
             await context.enqueue_links(exclude=exclude)
 
     sampler = ConcurrencySampler(crawler, platform)
-    await sampler.run(crawler.run(start_urls))
+    await sampler.run(
+        crawler.run(start_urls), stop_after_secs=actor_input.get("maxCrawlDurationSecs")
+    )

@@ -48,6 +48,12 @@
       "prefill": 100,
       "default": 100
     },
+    "maxCrawlDurationSecs": {
+      "title": "Max crawl duration (seconds)",
+      "type": "integer",
+      "description": "Stops the crawl after this many seconds. Requests in flight still finish. If not present, the crawl runs until the queue is empty or the request limit is reached.",
+      "minimum": 1
+    },
     "desiredConcurrency": {
       "title": "Desired concurrency",
       "type": "integer",

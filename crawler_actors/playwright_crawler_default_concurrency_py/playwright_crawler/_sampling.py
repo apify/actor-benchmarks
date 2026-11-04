@@ -46,13 +46,33 @@ class ConcurrencySampler:
         self._last_finished = 0
         self._last_finished_duration = 0.0
 
-    async def run(self, crawl: Coroutine[Any, Any, Any]) -> None:
-        """Run the crawl while sampling, and take a last sample once it finishes."""
+    async def run(
+        self, crawl: Coroutine[Any, Any, Any], *, stop_after_secs: float | None = None
+    ) -> None:
+        """Run the crawl while sampling, and take a last sample once it finishes.
+
+        With `stop_after_secs`, the crawler is told to stop once that many seconds have passed. The requests in
+        flight still finish, and they are sampled until the crawl ends.
+        """
         crawl_task = asyncio.ensure_future(crawl)
+        next_sample_at = monotonic() + self._interval_secs
+        stop_at = None if stop_after_secs is None else monotonic() + stop_after_secs
         try:
             while not crawl_task.done():
-                await asyncio.wait({crawl_task}, timeout=self._interval_secs)
-                await self._sample()
+                wake_at = (
+                    next_sample_at if stop_at is None else min(next_sample_at, stop_at)
+                )
+                await asyncio.wait(
+                    {crawl_task}, timeout=max(0.0, wake_at - monotonic())
+                )
+                if stop_at is not None and monotonic() >= stop_at:
+                    self._crawler.stop(
+                        f"The crawl reached its time limit of {stop_after_secs} s"
+                    )
+                    stop_at = None
+                if crawl_task.done() or monotonic() >= next_sample_at:
+                    await self._sample()
+                    next_sample_at = monotonic() + self._interval_secs
         except BaseException:
             crawl_task.cancel()
             raise

@@ -6,6 +6,7 @@
 	"environmentVariables": {},
 	"input": "./input_schema.json",
 	"defaultRunOptions": {
-		"memoryMbytes": 32768
+		"memoryMbytes": 32768,
+		"timeoutSecs": 7200
 	}
 }

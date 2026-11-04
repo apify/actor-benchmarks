@@ -20,4 +20,6 @@ To compare them, run the `Crawler benchmarks` workflow with `crawler_name_patter
 
 Every 10 seconds, each of these actors stores a sample of its concurrency state under the `CONCURRENCY_SAMPLES` key of the run's default key-value store: the desired and current concurrency, the cumulative finished, failed, retried and pending request counts, the throughput and mean request duration since the previous sample, and for CPU, memory and the event loop the share of the recent window the system saw the resource overloaded, which is what it scales down by. The benchmark adds the mean desired concurrency to the metrics and copies all samples of all runs into the detailed benchmark record in the `CrawlerPerformanceBenchmark` key-value store, under `concurrency_samples`, keyed by run id.
 
+The `maxCrawlDurationSecs` input stops a crawl after a fixed time, for runs whose end condition is a duration rather than a page count. The two Playwright concurrency actors allow runs of up to two hours.
+
 To run one of them locally, put the input into `storage/key_value_stores/default/INPUT.json` in the actor directory and run `uv run python -m parsel_crawler` or `uv run python -m playwright_crawler` there. Results land in `storage/datasets/default`.

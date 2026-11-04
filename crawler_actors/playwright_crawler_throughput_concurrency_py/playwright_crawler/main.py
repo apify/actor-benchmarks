@@ -9,7 +9,7 @@ from crawlee.autoscaling import ThroughputConcurrencySystem  # ty: ignore
 from crawlee.crawlers import PlaywrightCrawler, PlaywrightCrawlingContext
 from crawlee.crawlers._playwright._playwright_crawler import PlaywrightCrawlerOptions
 
-from ._platform import PlatformIO, create_proxy_configuration
+from ._platform import PlatformIO, configure_crawlee, create_proxy_configuration
 from ._sampling import ConcurrencySampler
 
 
@@ -20,6 +20,7 @@ async def main() -> None:
     `playwright_crawler_default_concurrency_py` uses the default `ConcurrencySystem` with otherwise identical
     settings and the same crawlee version.
     """
+    configure_crawlee()
     platform = PlatformIO()
     actor_input = await platform.get_input()
     proxy = create_proxy_configuration(actor_input.get("proxyConfiguration"))

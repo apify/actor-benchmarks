@@ -4,7 +4,7 @@ from typing import Any
 from crawlee import Glob, ConcurrencySettings
 from crawlee.crawlers import ParselCrawler, ParselCrawlingContext, BasicCrawlerOptions
 
-from ._platform import PlatformIO, create_proxy_configuration
+from ._platform import PlatformIO, configure_crawlee, create_proxy_configuration
 from ._sampling import ConcurrencySampler
 
 
@@ -15,6 +15,7 @@ async def main() -> None:
     `parsel_crawler_throughput_concurrency_py` uses the `ThroughputConcurrencySystem` with otherwise identical
     settings and the same crawlee version.
     """
+    configure_crawlee()
     platform = PlatformIO()
     actor_input = await platform.get_input()
     proxy = create_proxy_configuration(actor_input.get("proxyConfiguration"))

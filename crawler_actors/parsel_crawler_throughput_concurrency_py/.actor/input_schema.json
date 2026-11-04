@@ -9,16 +9,36 @@
       "type": "array",
       "description": "A static list of URLs to scrape.",
       "editor": "requestListSources",
-      "prefill": [{ "url": "http://127.0.0.1:8080" }],
-      "default": [{ "url": "http://127.0.0.1:8080" }]
+      "prefill": [
+        {
+          "url": "http://127.0.0.1:8080"
+        }
+      ],
+      "default": [
+        {
+          "url": "http://127.0.0.1:8080"
+        }
+      ]
     },
     "exclude": {
       "title": "Links to exclude",
       "type": "array",
       "description": "Links to exclude.",
       "editor": "stringList",
-      "prefill": ["https://**/products/**"],
-      "default": ["https://**/products/**"]
+      "prefill": [
+        "https://**/products/**"
+      ],
+      "default": [
+        "https://**/products/**"
+      ]
+    },
+    "include": {
+      "title": "Links to include",
+      "type": "array",
+      "description": "Glob patterns a link must match to be enqueued. Empty means every link on the same hostname.",
+      "editor": "stringList",
+      "prefill": [],
+      "default": []
     },
     "maxRequestsPerCrawl": {
       "title": "Max requests per crawl",
@@ -49,5 +69,8 @@
       }
     }
   },
-  "required": ["startUrls", "exclude"]
+  "required": [
+    "startUrls",
+    "exclude"
+  ]
 }

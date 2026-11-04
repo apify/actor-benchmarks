@@ -37,6 +37,9 @@ async def main() -> None:
     exclude: list[Pattern[Any] | Glob] = [
         Glob(pattern) for pattern in actor_input.get("exclude", [])
     ]
+    include: list[Pattern[Any] | Glob] = [
+        Glob(pattern) for pattern in actor_input.get("include", [])
+    ]
 
     @crawler.router.default_handler
     async def default_handler(context: PlaywrightCrawlingContext) -> None:
@@ -50,7 +53,11 @@ async def main() -> None:
             }
         )
 
-        await context.enqueue_links(exclude=exclude)
+        # An empty `include` would enqueue nothing, so links are filtered by it only when the input sets it.
+        if include:
+            await context.enqueue_links(include=include, exclude=exclude)
+        else:
+            await context.enqueue_links(exclude=exclude)
 
     sampler = ConcurrencySampler(crawler, platform)
     await sampler.run(crawler.run(start_urls))

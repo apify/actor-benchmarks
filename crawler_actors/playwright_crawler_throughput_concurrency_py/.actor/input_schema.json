@@ -43,10 +43,9 @@
     "maxRequestsPerCrawl": {
       "title": "Max requests per crawl",
       "type": "integer",
-      "description": "Specifies the maximum amount of requests handled by the crawler.",
+      "description": "Specifies the maximum amount of requests handled by the crawler. If not present, the crawl runs until the queue is empty or the time limit is reached.",
       "minimum": 0,
-      "prefill": 100,
-      "default": 100
+      "prefill": 100
     },
     "maxCrawlDurationSecs": {
       "title": "Max crawl duration (seconds)",
